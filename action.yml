@@ -1,0 +1,205 @@
+name: 'BigLinux Package Action'
+description: 'Builds Manjaro Packages'
+
+inputs:
+  package:
+    description: 'PKGBUILD repo name'
+    required: true
+  source:
+    description: 'custom package repo source'
+    required: false
+  branch:
+    description: 'branch to build against'
+    default: unstable
+    required: false
+  custom-repo:
+    description: 'custom repo'
+    required: false
+  multilib:
+    description: 'build multilib package'
+    required: false
+    default: false
+  repo:
+    description: 'package repo'
+    required: true
+  gpg-key:
+    descriptio: 'gpg signing key'
+    required: true
+  gpg-passphrase:
+    description: 'gpg passphrase'
+    required: true
+  ssh-key:
+    description: 'boxit user ssh private key'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: install build-dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install \
+        build-essential \
+        cmake \
+        fakeroot \
+        git \
+        libarchive-dev \
+        libarchive-tools \
+        libcurl4-openssl-dev \
+        libgpgme-dev \
+        libssl-dev \
+        zip \
+        python3-pip
+        sudo pip3 install meson
+        sudo pip3 install ninja
+    - name: install pacman
+      shell: bash
+      env:
+        PACMAN_VERSION: 6.0.1
+      run: |
+        sudo git clone --depth 1 https://gitlab.manjaro.org/packages/core/pacman.git
+        pushd pacman
+        sudo wget https://sources.archlinux.org/other/pacman/pacman-${PACMAN_VERSION}.tar.xz
+        sudo tar -xvf pacman-${PACMAN_VERSION}.tar.xz
+        pushd pacman-${PACMAN_VERSION}
+        sudo patch -p1 -i ../pacman-sync-first-option.patch
+        sudo meson --prefix=/usr \
+                    --buildtype=plain \
+                    -Ddoc=disabled \
+                    -Ddoxygen=enabled \
+                    -Dscriptlet-shell=/usr/bin/bash \
+                    -Dldconfig=/usr/bin/ldconfig \
+                    build
+        sudo meson compile -C build
+        sudo meson install -C build
+        popd
+        sudo install -m644 pacman.conf /etc/pacman.conf
+        sudo install -m644 makepkg.conf /etc/
+        sudo mkdir -p /etc/pacman.d
+        sudo touch /etc/pacman.d/mirrorlist
+        popd
+        sudo rm -rf pacman
+        
+        #add biglinux repository
+        sudo sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf
+        sudo sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf
+        sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
+        sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
+        echo '
+        [biglinux-stable]
+        SigLevel = PackageRequired
+        Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/pacman.conf
+    
+    - name: install keyrings
+      shell: bash
+      run: |
+        sudo install -dm755 /usr/share/pacman/keyrings/
+        sudo git clone --depth 1 https://gitlab.manjaro.org/packages/core/manjaro-keyring.git
+        pushd manjaro-keyring
+          sudo install -m0644 manjaro.gpg /usr/share/pacman/keyrings/
+          sudo install -m0644 manjaro-trusted /usr/share/pacman/keyrings/
+          sudo install -m0644 manjaro-trusted /usr/share/pacman/keyrings/
+        popd
+        sudo rm -rf manjaro-keyring
+        mkdir -p archlinux-keyring
+        pushd archlinux-keyring
+          wget https://archlinux.org/packages/core/any/archlinux-keyring/download -O /tmp/archlinux-keyring.tar.zst
+          tar --use-compress-program=unzstd --strip-components=4 --wildcards -xvf /tmp/archlinux-keyring.tar.zst usr/share/pacman/keyrings/*
+          sudo install -m0644 archlinux.gpg /usr/share/pacman/keyrings/
+          sudo install -m0644 archlinux-trusted /usr/share/pacman/keyrings/
+          sudo install -m0644 archlinux-revoked /usr/share/pacman/keyrings/
+        popd
+        sudo rm -rf archlinux-keyring
+        sudo pacman-key --init
+        sudo pacman-key -r 45EC44879815E2A6
+        sudo pacman-key --lsign-key 45EC44879815E2A6
+        sudo pacman-key --populate archlinux manjaro
+        
+    - name: install manjaro-chrootbuild
+      shell: bash
+      run: |
+        sudo git clone --depth 1 https://gitlab.manjaro.org/tools/development-tools/manjaro-chrootbuild
+        pushd manjaro-chrootbuild
+        sudo ./install.sh
+        echo 'PACKAGER="Bruno Goncalves <bigbruno@gmail.com>"' | sudo tee -a /etc/makepkg.conf > /dev/null
+        popd
+        sudo rm -rf manjaro-chrootbuild
+        
+        #add biglinux repository
+        sudo sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
+        sudo sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
+        sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
+        sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
+        echo '
+        [biglinux-stable]
+        SigLevel = PackageRequired
+        Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
+        
+    ## Tmate ##
+    #- name: Setup tmate session
+    #  uses: mxschmitt/action-tmate@v3
+        
+    - name: build package
+      shell: bash -O extglob {0}
+      run: |
+        git clone ${{ github.event.client_payload.url }}.git
+        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $gitfolder
+
+        build_opt=("-H" "-p ." "-b ${{ inputs.branch }}")
+        [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
+        [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
+        echo "cmd=chrootbuild ${build_opt[@]}"
+        sudo chrootbuild ${build_opt[@]}
+        
+        echo "Trocar : por ."
+        for i in *.zst *.sig *.tar; do
+        test -e $i && if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/./'); fi; done
+        exit 0
+        
+    - name: sign package
+      shell: bash -O extglob {0}
+      run: |
+        echo "Assinar Pacote"
+        cat <(echo -e "${{ inputs.gpg-key }}") | gpg --batch --import &>/dev/null
+        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $gitfolder
+        for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
+          gpg --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --detach-sign ${p}
+        done
+        
+    ## Tmate ##
+    #- name: Setup tmate session
+    #  uses: mxschmitt/action-tmate@v3
+    
+    - name: CheckSum
+      shell: bash -O extglob {0}
+      run: |
+        echo "Checksum"
+        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $gitfolder
+        ./md5.sh
+    #    for i in *.zst *.sig *.tar; do
+    #    test -e $i && md5sum -z $i >> $i.md5; done
+   
+   
+       
+    #- name: prepare assets transaction
+      #shell: bash -O extglob {0}
+      #run: |
+        #source /var/lib/chrootbuild/build/${{ inputs.package }}/PKGBUILD
+        #tag=${pkgver}-${pkgrel}
+        #for p in ${pkgname[@]}; do
+          #name=$(find . -name ${p}-${tag}*.zst)
+          #arch=$(echo ${name} | rev | cut -d- -f1 | rev | cut -d. -f1)
+          #file=${p}-${tag}-${arch}
+          #btf=${file}.yml # boxit transaction file
+          #echo "sha256_pkg: $(sha256sum ${name} | cut -d' ' -f1)" > ${btf}
+          #echo "sha256_sig: $(sha256sum ${name}.sig | cut -d' ' -f1)" >> ${btf}
+          #echo "repository: ${{ inputs.repo }}" >> ${btf}
+          #echo "branch: ${{ inputs.branch }}" >> ${btf}
+          #tar -czvf ${file}.tar ./${file}*.zst ./${file}*.sig ./${btf}
+        #done
+        #echo "TAG=${tag}" >>$GITHUB_ENV
