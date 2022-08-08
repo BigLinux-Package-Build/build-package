@@ -1,4 +1,4 @@
-name: Makepkg-Testing
+name: build-package
 
 # Controls when the workflow will run
 on:
@@ -74,9 +74,9 @@ jobs:
           cd $gitfolder
           ls -lh
           if [ ${{ github.event.client_payload.branch }} = "stable" ];then branch=stable; else branch=testing; fi
-          for i in *.zst *.sig *.tar; do 
+          for i in *.zst *.sig *.tar *.md5; do 
           test -e $i && if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/./'); fi; done
-          for i in *.zst *.sig *.tar; do
+          for i in *.zst *.sig *.tar *.md5; do
           test -e $i && rsync -vaPpz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
           done
           exit 0
