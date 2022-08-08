@@ -75,7 +75,7 @@ jobs:
           ls -lh
           if [ ${{ github.event.client_payload.branch }} = "stable" ];then branch=stable; else branch=testing; fi
           for i in *.zst *.sig *.tar *.md5; do
-          test -e $i && rsync -vaPpz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
+          test -e $i && rsync -vaPpz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch
           done
           exit 0
           
