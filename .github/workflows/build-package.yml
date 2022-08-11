@@ -25,7 +25,7 @@ jobs:
       - name: Telegram Alert Start
         shell: bash
         run: |
-          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID_ISO }}", "text": "Gerando Pacote: ${{ env.pkgbuild_folder }} a partir do branch ${{ github.ref_name }}, link da geração: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Gerando Pacote: ${{ env.pkgbuild_folder }} a partir do branch ${{ github.ref_name }}, link da geração: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
       
       - name: echo PayLoads
         run: |
@@ -87,12 +87,12 @@ jobs:
       - name: Telegram Alert End
         shell: bash
         run: |
-          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID_ISO }}", "text": "Pacote: ${{ env.pkgbuild_folder }} criado e enviado a partir do branch ${{ github.ref_name }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Pacote: ${{ env.pkgbuild_folder }} criado e enviado a partir do branch ${{ github.ref_name }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
           
       - name: Telegram Alert Fail
         if: ${{ failure() || cancelled() }}
         run: |
-          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID_ISO }}", "text": "FALHA ao criar Pacote: ${{ env.pkgbuild_folder }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "FALHA ao criar Pacote: ${{ env.pkgbuild_folder }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
           
         ## Tmate ##
       #- name: Setup tmate session
