@@ -43,7 +43,7 @@ jobs:
           
       ## Tmate ##
       - name: Setup tmate session
-       uses: mxschmitt/action-tmate@v3
+        uses: mxschmitt/action-tmate@v3
         
       - name: Publish Package
         shell: bash
