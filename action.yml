@@ -181,8 +181,10 @@ runs:
         gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
         cd $gitfolder
         echo '#!/bin/bash
-        file=$(find -type f -iname "*.zst" | cut -d "/" -f2)
-        for i in *.zst *.sig; do test -e $i && md5sum $i >> "$file"".md5"; done
+        #file=$(find -type f -iname "*.zst" | cut -d "/" -f2)
+        #for i in *.zst *.sig; do test -e $i && md5sum $i >> "$file.md5"; done
+        for i in $(ls *.zst); do md5sum $i >> $i.md5; done
+        for i in $(ls *.sig | sed 's/.sig//'); do md5sum $i.sig >> $i.md5; done
         exit 0' > md5.sh
         bash md5.sh
    
