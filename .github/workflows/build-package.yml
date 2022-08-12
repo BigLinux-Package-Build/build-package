@@ -25,10 +25,7 @@ jobs:
       - name: Telegram Alert Start
         shell: bash
         run: |
-          echo 1${{ github.event_name }}
-          echo 2${{ github.event.action }}
-          
-          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_TESTE }}", "text": "Criando ${{ env.pkgbuild_folder }} Eviado por ${{ github.actor }}", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT }}", "text": "Criando ${{ github.event.action }} Eviado por ${{ github.actor }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
       
       - name: echo PayLoads
         run: |
@@ -87,15 +84,15 @@ jobs:
           done
           exit 0
           
-      #- name: Telegram Alert End
-        #shell: bash
-        #run: |
-          #curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Pacote: ${{ env.pkgbuild_folder }} criado e enviado a partir do branch ${{ github.ref_name }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+      - name: Telegram Alert End
+        shell: bash
+        run: |
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Pacote: ${{ github.event.action }} criado e enviado a partir do branch ${{ github.ref_name }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
           
-      #- name: Telegram Alert Fail
-        #if: ${{ failure() || cancelled() }}
-        #run: |
-          #curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "FALHA ao criar Pacote: ${{ env.pkgbuild_folder }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
+      - name: Telegram Alert Fail
+        if: ${{ failure() || cancelled() }}
+        run: |
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
           
         ## Tmate ##
       #- name: Setup tmate session
