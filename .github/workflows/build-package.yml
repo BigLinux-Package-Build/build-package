@@ -22,10 +22,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       
-      - name: Telegram Alert Start
-        shell: bash
-        run: |
-          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Gerando Pacote: ${{ env.pkgbuild_folder }} a partir do branch ${{ github.ref_name }}, link da geração: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+      #- name: Telegram Alert Start
+        #shell: bash
+        #run: |
+          #curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Gerando Pacote: ${{ env.pkgbuild_folder }} a partir do branch ${{ github.ref_name }}, link da geração: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
       
       - name: echo PayLoads
         run: |
@@ -42,8 +42,8 @@ jobs:
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           
       ## Tmate ##
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      #- name: Setup tmate session
+        #uses: mxschmitt/action-tmate@v3
         
       - name: Publish Package
         shell: bash
