@@ -25,19 +25,19 @@ jobs:
       - name: Telegram Alert Start
         shell: bash
         run: |
-          echo ${{ runner.name }}
-          echo ${{ github.event_type }}
-          echo ${{ github.action_path }}
-          echo ${{ github.action_repository }}
-          echo ${{ github.actions }}
-          echo ${{ github.actor }}
-          echo ${{ github.api_url }}
-          echo ${{ github.base_ref }}
-          echo ${{ github.env }}
-          echo ${{ github.event_name }}
-          echo ${{ github.event_path }}
-          echo ${{ github.graphql_url }}
-          echo ${{ github.head_ref }}
+          echo 1${{ runner.name }}
+          echo 2${{ github.event_type }}
+          echo 3${{ github.action_path }}
+          echo 4${{ github.action_repository }}
+          echo 5${{ github.actions }}
+          echo 6${{ github.actor }}
+          echo 7${{ github.api_url }}
+          echo 8${{ github.base_ref }}
+          echo 9${{ github.env }}
+          echo 10${{ github.event_name }}
+          echo 11${{ github.event_path }}
+          echo 12${{ github.graphql_url }}
+          echo 13${{ github.head_ref }}
           echo ${{ github.job }}
           echo ${{ github.path }}
           echo ${{ github.ref }}
