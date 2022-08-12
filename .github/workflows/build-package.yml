@@ -42,7 +42,7 @@ jobs:
           echo ${{ github.run_attempt }}
           echo ${{ github.server_url }}
           echo ${{ github.repository }}
-          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_TESTE }}", "text": "Criando ${{ env.pkgbuild_folder }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_TESTE }}", "text": "Criando ${{ env.pkgbuild_folder }}", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
       
       - name: echo PayLoads
         run: |
