@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           echo 1${{ runner.name }}
-          echo 2${{ github.event_type }}
+          echo 2${{ event.type }}
           echo 3${{ github.action_path }}
           echo 4${{ github.action_repository }}
           echo 5${{ github.actions }}
