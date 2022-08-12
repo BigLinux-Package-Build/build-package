@@ -33,6 +33,7 @@ jobs:
           echo ${{ github.workflow }}
           echo ${{ runner.name }}
           echo ${{ github.action }}
+          echo "1"
           echo ${{ github.graphql_url }}
           echo ${{ github.head_ref }}
           echo ${{ github.job }}
@@ -41,8 +42,31 @@ jobs:
           echo ${{ github.path }}
           echo ${{ github.run_attempt }}
           echo ${{ github.server_url }}
+          echo "2"
           echo ${{ github.repository }}
-          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_TESTE }}", "text": "Criando ${{ env.pkgbuild_folder }}", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
+          echo ${{ github.ref_name }}
+          echo ${{ github.action_path }}
+          echo ${{ github.action_ref }}
+          echo ${{ github.action_repository }}
+          echo ${{ github.action_status }}
+          echo ${{ github.actor }}
+          echo ${{ github.api_url }}
+          echo ${{ github.base_ref }}
+          echo ${{ github.env }}
+          echo "3"
+          echo ${{ github.event }}
+          echo ${{ github.event_name }}
+          echo ${{ github.event_path }}
+          echo ${{ github.graphql_url }}
+          echo ${{ github.head_ref }}
+          echo ${{ github.job }}
+          echo ${{ github.ref }}
+          echo "4"
+          echo ${{ github.ref_name }}
+          echo ${{ github.path }}
+          echo ${{ github.run_attempt }}
+          echo ${{ github.server_url }}
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_TESTE }}", "text": "Criando ${{ env.pkgbuild_folder }} Eviado por ${{ github.actor }}", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
       
       - name: echo PayLoads
         run: |
