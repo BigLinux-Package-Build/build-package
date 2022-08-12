@@ -25,70 +25,9 @@ jobs:
       - name: Telegram Alert Start
         shell: bash
         run: |
-          echo 1${{ runner.name }}
-          echo 2${{ event.type }}
-          echo 3${{ github.action_path }}
-          echo 4${{ github.action_repository }}
-          echo 5${{ github.actions }}
-          echo 6${{ github.actor }}
-          echo 7${{ github.api_url }}
-          echo 8${{ github.base_ref }}
-          echo 9${{ github.env }}
-          echo 10${{ github.event_name }}
-          echo 11${{ github.event_path }}
-          echo 12${{ github.graphql_url }}
-          echo 13${{ github.head_ref }}
-          echo ${{ github.job }}
-          echo ${{ github.path }}
-          echo ${{ github.ref }}
-          echo ${{ github.ref_name }}
-          echo ${{ github.repository }}
-          echo ${{ github.step_summary }}
-          echo ${{ github.workflow }}
-          echo ${{ runner.arch }}
-          echo ${{ runner.name }}
-          echo ${{ runner.tool_cache }}
-          echo ${{ github.repository }}
-          echo ${{ github.actor }}
-          echo ${{ github.event_name }}
-          echo ${{ github.job }}
-          echo ${{ github.ref_name }}
-          echo ${{ github.workflow }}
-          echo ${{ runner.name }}
-          echo ${{ github.action }}
-          echo "1"
-          echo ${{ github.graphql_url }}
-          echo ${{ github.head_ref }}
-          echo ${{ github.job }}
-          echo ${{ github.ref  }}
-          echo ${{ github.ref_name }}
-          echo ${{ github.path }}
-          echo ${{ github.run_attempt }}
-          echo ${{ github.server_url }}
-          echo "2"
-          echo ${{ github.repository }}
-          echo ${{ github.ref_name }}
-          echo ${{ github.action_path }}
-          echo ${{ github.action_ref }}
-          echo ${{ github.action_repository }}
-          echo ${{ github.action_status }}
-          echo ${{ github.actor }}
-          echo ${{ github.api_url }}
-          echo ${{ github.base_ref }}
-          echo ${{ github.env }}
-          echo "3"
-          echo ${{ github.event }}
-          echo ${{ github.event_name }}
-          echo ${{ github.event_path }}
-          echo ${{ github.graphql_url }}
-          echo ${{ github.head_ref }}
-          echo ${{ github.job }}
-          echo ${{ github.ref }}
-          echo "4"
-          echo ${{ github.ref_name }}
-          echo ${{ github.path }}
-          echo ${{ github.run_attempt }}
-          echo ${{ github.server_url }}
+          echo 1${{ github.event_name }}
+          echo 2${{ github.event.action }}
+          
           curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_TESTE }}", "text": "Criando ${{ env.pkgbuild_folder }} Eviado por ${{ github.actor }}", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
       
       - name: echo PayLoads
@@ -156,7 +95,7 @@ jobs:
       #- name: Telegram Alert Fail
         #if: ${{ failure() || cancelled() }}
         #run: |
-          #curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "FALHA ao criar Pacote: ${{ env.pkgbuild_folder }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+          #curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "FALHA ao criar Pacote: ${{ env.pkgbuild_folder }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
           
         ## Tmate ##
       #- name: Setup tmate session
