@@ -31,7 +31,7 @@ inputs:
   ssh-key:
     description: 'boxit user ssh private key'
     required: false
-  extra-repo:
+  extrarepo:
     description: 'extra repository to buld package'
     required: false
 
@@ -122,7 +122,7 @@ runs:
     - name: install manjaro-chrootbuild
       shell: bash
       env:
-        EXTRA-REPO: ${{ inputs.extra-repo }}
+        EXTRAREPO: ${{ inputs.extrarepo }}
       run: |
         sudo git clone --depth 1 https://gitlab.manjaro.org/tools/development-tools/manjaro-chrootbuild
         pushd manjaro-chrootbuild
@@ -141,10 +141,10 @@ runs:
         SigLevel = PackageRequired
         Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         
-        echo 'echo $EXTRA-REPO'
-        echo $EXTRA-REPO
+        echo 'echo $EXTRAREPO'
+        echo $EXTRAREPO
         
-        if [ "$EXTRA-REPO" = testing ]; then
+        if [ "$EXTRAREPO" = testing ]; then
         echo '
         [biglinux-testing]
         SigLevel = PackageRequired
