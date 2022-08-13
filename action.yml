@@ -141,9 +141,6 @@ runs:
         SigLevel = PackageRequired
         Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         
-        echo 'echo $EXTRAREPO'
-        echo $EXTRAREPO
-        
         if [ "$EXTRAREPO" = "testing" ]; then
         echo '
         [biglinux-testing]
@@ -168,12 +165,12 @@ runs:
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
         echo "cmd=chrootbuild ${build_opt[@]}"
-        sudo chrootbuild ${build_opt[@]}
+        #sudo chrootbuild ${build_opt[@]}
         
         echo "Trocar : por ."
         for i in *.zst *.sig *.tar; do
-        test -e $i && if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/./'); fi; done
-        #exit 0
+        test -e $i && if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/./'); exit 0; fi; done
+        
         
     - name: sign package
       shell: bash -O extglob {0}
