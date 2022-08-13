@@ -169,8 +169,8 @@ runs:
         
         echo "Trocar : por ."
         for i in *.zst *.sig *.tar; do
-        test -e $i && if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/./'); exit 0; fi; done
-        
+        test -e $i && if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/./'); else exit 0; fi; done
+        exit 0
         
     - name: sign package
       shell: bash -O extglob {0}
