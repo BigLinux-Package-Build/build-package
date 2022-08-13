@@ -165,7 +165,7 @@ runs:
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
         echo "cmd=chrootbuild ${build_opt[@]}"
-        #sudo chrootbuild ${build_opt[@]}
+        sudo chrootbuild ${build_opt[@]}
         
         echo "Trocar : por ."
         for i in *.zst *.sig *.tar; do
