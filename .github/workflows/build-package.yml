@@ -40,6 +40,7 @@ jobs:
           branch: stable
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
+          extra-repo: ${{ github.event.client_payload.extra-repo }}"
           
       ## Tmate ##
       #- name: Setup tmate session

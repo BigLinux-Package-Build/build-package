@@ -10,7 +10,7 @@ inputs:
     required: false
   branch:
     description: 'branch to build against'
-    default: unstable
+    default: stable
     required: false
   custom-repo:
     description: 'custom repo'
@@ -30,6 +30,9 @@ inputs:
     required: true
   ssh-key:
     description: 'boxit user ssh private key'
+    required: false
+  extra-repo:
+    description: 'extra repository to buld package'
     required: false
 
 runs:
@@ -118,11 +121,13 @@ runs:
         
     - name: install manjaro-chrootbuild
       shell: bash
+      env:
+        EXTRA-REPO: ${{ inputs.extra-repo }}
       run: |
         sudo git clone --depth 1 https://gitlab.manjaro.org/tools/development-tools/manjaro-chrootbuild
         pushd manjaro-chrootbuild
         sudo ./install.sh
-        echo 'PACKAGER="Bruno Goncalves <bigbruno@gmail.com>"' | sudo tee -a /etc/makepkg.conf > /dev/null
+        echo 'PACKAGER="Big Linux Package Build <bigbruno@gmail.com>"' | sudo tee -a /etc/makepkg.conf > /dev/null
         popd
         sudo rm -rf manjaro-chrootbuild
         
@@ -135,6 +140,17 @@ runs:
         [biglinux-stable]
         SigLevel = PackageRequired
         Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        
+        echo 'echo $EXTRA-REPO'
+        echo $EXTRA-REPO
+        
+        if [ "$EXTRA-REPO" = testing ]; then
+        echo '
+        [biglinux-testing]
+        SigLevel = PackageRequired
+        Server = https://repo.biglinux.com.br/testing/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        fi
+        
         sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
         
     ## Tmate ##
