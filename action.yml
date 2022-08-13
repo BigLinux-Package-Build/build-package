@@ -144,7 +144,7 @@ runs:
         echo 'echo $EXTRAREPO'
         echo $EXTRAREPO
         
-        if [ "$EXTRAREPO" = testing ]; then
+        if [ "$EXTRAREPO" = "testing" ]; then
         echo '
         [biglinux-testing]
         SigLevel = PackageRequired
