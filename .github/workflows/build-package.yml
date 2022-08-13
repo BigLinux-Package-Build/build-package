@@ -31,6 +31,7 @@ jobs:
         run: |
           echo "url: ${{ github.event.client_payload.url }}"
           echo "branch: ${{ github.event.client_payload.branch }}"
+          echo "extra-repo: ${{ github.event.client_payload.extra-repo }}"
       - name: Makepkg Build and Check
         id: makepkg
         # You may pin to the exact commit or the version.
