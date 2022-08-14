@@ -25,7 +25,7 @@ jobs:
       - name: Telegram Alert Start
         shell: bash
         run: |
-          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Criando ${{ github.event.action }} eviado por ${{ github.actor }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Criando ${{ github.event.action }} do repositóio ${{ github.event.client_payload.branch }} enviado por ${{ github.actor }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
       
       - name: echo PayLoads
         run: |
