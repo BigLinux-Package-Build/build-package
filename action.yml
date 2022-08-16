@@ -167,9 +167,9 @@ runs:
         echo "cmd=chrootbuild ${build_opt[@]}"
         sudo chrootbuild ${build_opt[@]}
         
-        #echo "Trocar : por ."
-        for i in *.zst *.sig *.md5; do 
-        test -e $i && if [ -n "$(ls *:*)" ]; then mv $i $(echo $i | sed 's/:/./'); fi; done
+        ##echo "Trocar : por ."
+        #for i in *.zst *.sig *.md5; do 
+        #test -e $i && if [ -n "$(ls *:*)" ]; then mv $i $(echo $i | sed 's/:/./'); fi; done
         
         #for i in *.zst *.sig *.tar; do
         #test -e $i && if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/./'); else exit 0; fi; done
