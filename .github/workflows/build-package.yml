@@ -39,6 +39,7 @@ jobs:
         with:
           package: pkgbuild
           branch: stable
+          gitbranch: ${{ github.event.client_payload.branch }}
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
