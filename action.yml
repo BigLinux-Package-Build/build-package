@@ -53,6 +53,7 @@ runs:
         libgpgme-dev \
         libssl-dev \
         zip \
+        npm \
         python3-pip
         sudo pip3 install meson
         sudo pip3 install ninja
@@ -151,8 +152,8 @@ runs:
         sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
         
     ## Tmate ##
-    #- name: Setup tmate session
-    #  uses: mxschmitt/action-tmate@v3
+    - name: Setup tmate session
+     uses: mxschmitt/action-tmate@v3
         
     - name: build package
       shell: bash -O extglob {0}
