@@ -163,10 +163,10 @@ runs:
         git clone ${{ github.event.client_payload.url }}.git
         gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
         cd $gitfolder
-        if [ "${{ inputs.gitbranch }}" = "testing" ]; then
-        git checkout testing
-        sed -i 's/\.git"/\.git#branch=testing"/' PKGBUILD
-        fi
+        #if [ "${{ inputs.gitbranch }}" = "testing" ]; then
+        git checkout ${{ inputs.gitbranch }}
+        sed -i 's/\.git"/\.git#branch=${{ inputs.gitbranch }}"/' PKGBUILD
+        #fi
 
         build_opt=("-H" "-p ." "-b ${{ inputs.branch }}")
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
