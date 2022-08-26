@@ -178,7 +178,7 @@ runs:
         #for i in *.zst *.sig *.md5; do 
         #test -e $i && if [ -n "$(ls *:*)" ]; then mv $i $(echo $i | sed 's/:/./'); fi; done
         
-        for i in *.zst; do; if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/-/'); fi; done
+        for i in *.zst; do if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/-/'); fi; done
         
         
     - name: sign package
