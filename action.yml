@@ -158,7 +158,7 @@ runs:
       #uses: mxschmitt/action-tmate@v3
         
     - name: build package
-      shell: bash -O extglob {0}
+      shell: bash
       run: |
         git clone ${{ github.event.client_payload.url }}.git
         gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
