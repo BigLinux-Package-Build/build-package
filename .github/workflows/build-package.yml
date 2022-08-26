@@ -48,7 +48,7 @@ jobs:
       #- name: Setup tmate session
         #uses: mxschmitt/action-tmate@v3
         
-      - name: Publish Package
+      - name: Publish Package on GitHub
         shell: bash
         run: |
           release=$(find . -name *.zst | cut -d "/" -f2)
@@ -62,7 +62,8 @@ jobs:
           find -iname "*$i" -exec gh release upload ${release} --repo ${GITHUB_REPOSITORY} --clobber {} \;
           done
           
-      - name: Prepare Upload
+       
+      - name: Push to Repo
         shell: bash
         run: |
           echo "## ssh setup"
@@ -70,14 +71,11 @@ jobs:
           touch /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
           #ssh-agent -a /tmp/ssh_agent.sock > /dev/null
-       
-      - name: Push to Repo
-        shell: bash
-        run: |
           echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/github_actions
           eval `ssh-agent -s`
           ssh-add /home/runner/.ssh/github_actions
           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
+          
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           ls -lh
