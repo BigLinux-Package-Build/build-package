@@ -160,6 +160,7 @@ runs:
     - name: build package
       shell: bash
       run: |
+        # "build package"
         git clone ${{ github.event.client_payload.url }}.git
         gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
         cd $gitfolder
@@ -176,13 +177,17 @@ runs:
         
     - name: Rename Package
       shell: bash -O extglob {0}
-      run: for i in *.zst; do if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/-/'); fi; done
+      run: | 
+        # "Rename Package"
+        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $gitfolder
+        for i in *.zst; do if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/-/'); fi; done
         
         
     - name: sign package
       shell: bash -O extglob {0}
       run: |
-        echo "Assinar Pacote"
+        # "Assinar Pacote"
         cat <(echo -e "${{ inputs.gpg-key }}") | gpg --batch --import &>/dev/null
         gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
         cd $gitfolder
@@ -197,7 +202,7 @@ runs:
     - name: CheckSum
       shell: bash -O extglob {0}
       run: |
-        echo "Checksum"
+        # "Checksum"
         gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
         cd $gitfolder
         echo '#!/bin/bash
