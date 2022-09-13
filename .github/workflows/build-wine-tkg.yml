@@ -51,8 +51,8 @@ jobs:
         run: |
           release=$(find . -name *.zst | cut -d "/" -f2)
           echo ${{ github.token }} | gh auth login --with-token
-          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-          cd $gitfolder
+          
+          cd wine-tkg-git/wine-tkg-git/
           ls -lh
           gh release create ${release} --title ${release} --repo ${{ github.repository }} --notes "automated release from ${{ github.event.client_payload.url }}" || echo "release already exists"
           GITHUB_LINK=https://github.com/${GITHUB_REPOSITORY}/releases/download/${release}
