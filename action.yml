@@ -178,7 +178,6 @@ runs:
       run: |
         # "Assinar Pacote"
         cat <(echo -e "${{ inputs.gpg-key }}") | gpg --batch --import &>/dev/null
-        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
         cd wine-tkg-git/wine-tkg-git/
         for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
           gpg --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --detach-sign ${p}
@@ -192,8 +191,7 @@ runs:
       shell: bash -O extglob {0}
       run: |
         # "Checksum"
-        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-        cd $gitfolder
+        cd wine-tkg-git/wine-tkg-git
         echo '#!/bin/bash
         #file=$(find -type f -iname "*.zst" | cut -d "/" -f2)
         #for i in *.zst *.sig; do test -e $i && md5sum $i >> "$file.md5"; done
