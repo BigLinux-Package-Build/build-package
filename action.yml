@@ -163,13 +163,9 @@ runs:
         # "build package"
         git clone ${{ github.event.client_payload.url }}.git
         
-        for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
-        
-        cd $i
-        if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
-        git checkout ${{ inputs.gitbranch }}
-        sed -i 's/\.git"/\.git#branch=${{ inputs.gitbranch }}"/' PKGBUILD
-        fi
+        cd wine-tkg-git/wine-tkg-git
+        sed -i '/When you are ready/d' wine-tkg-scripts/prepare.sh
+        sed -i '/choice \[0/d' wine-tkg-scripts/prepare.sh
 
         build_opt=("-H" "-p ." "-b ${{ inputs.branch }}")
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
@@ -177,24 +173,13 @@ runs:
         echo "cmd=chrootbuild ${build_opt[@]}"
         sudo chrootbuild ${build_opt[@]}
         
-        done
-        
-    - name: Rename Package
-      shell: bash -O extglob {0}
-      run: | 
-        # "Rename Package"
-        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-        cd $gitfolder
-        for i in *.zst; do if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/-/'); fi; done
-        
-        
     - name: sign package
       shell: bash -O extglob {0}
       run: |
         # "Assinar Pacote"
         cat <(echo -e "${{ inputs.gpg-key }}") | gpg --batch --import &>/dev/null
         gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-        cd $gitfolder
+        cd wine-tkg-git/wine-tkg-git/
         for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
           gpg --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --detach-sign ${p}
         done
@@ -216,9 +201,7 @@ runs:
         for i in $(ls *.sig | sed 's/.sig//'); do md5sum $i.sig >> $i.md5; done
         exit 0' > md5.sh
         bash md5.sh
-   
-   
-       
+
     #- name: prepare assets transaction
       #shell: bash -O extglob {0}
       #run: |
