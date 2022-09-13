@@ -162,8 +162,10 @@ runs:
       run: |
         # "build package"
         git clone ${{ github.event.client_payload.url }}.git
-        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-        cd $gitfolder
+        
+        for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
+        
+        cd $i
         if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
         git checkout ${{ inputs.gitbranch }}
         sed -i 's/\.git"/\.git#branch=${{ inputs.gitbranch }}"/' PKGBUILD
@@ -174,6 +176,8 @@ runs:
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
         echo "cmd=chrootbuild ${build_opt[@]}"
         sudo chrootbuild ${build_opt[@]}
+        
+        done
         
     - name: Rename Package
       shell: bash -O extglob {0}
