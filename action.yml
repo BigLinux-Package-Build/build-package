@@ -96,6 +96,10 @@ runs:
         [biglinux-stable]
         SigLevel = PackageRequired
         Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/pacman.conf
+        echo '
+        [biglinux-testing]
+        SigLevel = PackageRequired
+        Server = https://repo.biglinux.com.br/testing/$arch' | sudo tee -a /etc/pacman.conf
     
     - name: install keyrings
       shell: bash
@@ -144,12 +148,12 @@ runs:
         SigLevel = PackageRequired
         Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         
-        if [ "$EXTRAREPO" = "testing" ]; then
+        #if [ "$EXTRAREPO" = "testing" ]; then
         echo '
         [biglinux-testing]
         SigLevel = PackageRequired
         Server = https://repo.biglinux.com.br/testing/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
-        fi
+        #fi
         
         sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
         
