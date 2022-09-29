@@ -3,8 +3,7 @@ name: Build Wine TKG
 on:
   repository_dispatch:
     types:
-      - webhook
-      - '**'
+      - TKG/wine
   workflow_dispatch:
 
 jobs:
@@ -26,7 +25,7 @@ jobs:
           sed -i "/'jack2'                 'lib32-jack2'/d" PKGBUILD
           sed -i "/'gst-plugins-good'      'lib32-gst-plugins-good'/d" PKGBUILD 
           su user -c "yes|PKGDEST=/tmp/wine-tkg makepkg --noconfirm -s"
-          
+      
       - name: Publish Package on GitHub
         shell: bash
         run: |

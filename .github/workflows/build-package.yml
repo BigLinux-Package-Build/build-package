@@ -4,8 +4,9 @@ name: Build Package
 on:
   repository_dispatch:
     types:
-      - webhook
-      - '**'
+      - biglinux/*
+      - AUR/*
+      - xivastudio/*
   
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
