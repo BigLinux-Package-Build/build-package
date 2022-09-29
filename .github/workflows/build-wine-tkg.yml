@@ -52,7 +52,8 @@ jobs:
           
   push:
     runs-on: ubuntu-latest
-      # Tmate ##
+    steps:
+      - uses: actions/checkout@v2
       - name: Setup TMATE Session
         uses: mxschmitt/action-tmate@v3
           
