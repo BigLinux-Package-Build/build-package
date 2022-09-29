@@ -68,13 +68,13 @@ jobs:
         run: |
           echo "## ssh setup"
           mkdir -p /home/runner/.ssh
-          touch /home/runner/.ssh/github_actions
-          chmod 600 /home/runner/.ssh/github_actions
+          touch /home/runner/.ssh/id_rsa
+          chmod 600 /home/runner/.ssh/id_rsa
           #ssh-agent -a /tmp/ssh_agent.sock > /dev/null
-          echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/github_actions
+          echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/id_rsa
           eval `ssh-agent -s`
-          ssh-add /home/runner/.ssh/github_actions
-          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
+          #ssh-add /home/runner/.ssh/github_actions
+          #ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
           
           cd wine-tkg-git/wine-tkg-git
           ls -lh
