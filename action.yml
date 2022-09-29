@@ -187,20 +187,21 @@ runs:
       shell: bash -O extglob {0}
       run: | 
         # "Rename Package"
-        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-        cd $gitfolder
+        for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
+        cd $i
         for i in *.zst; do if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/-/'); fi; done
-        
+        done
         
     - name: sign package
       shell: bash -O extglob {0}
       run: |
         # "Assinar Pacote"
         cat <(echo -e "${{ inputs.gpg-key }}") | gpg --batch --import &>/dev/null
-        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-        cd $gitfolder
+        for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
+        cd $i
         for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
           gpg --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --detach-sign ${p}
+        done
         done
         
     ## Tmate ##
@@ -211,8 +212,8 @@ runs:
       shell: bash -O extglob {0}
       run: |
         # "Checksum"
-        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-        cd $gitfolder
+        for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
+        cd $i
         echo '#!/bin/bash
         #file=$(find -type f -iname "*.zst" | cut -d "/" -f2)
         #for i in *.zst *.sig; do test -e $i && md5sum $i >> "$file.md5"; done
@@ -220,6 +221,7 @@ runs:
         for i in $(ls *.sig | sed 's/.sig//'); do md5sum $i.sig >> $i.md5; done
         exit 0' > md5.sh
         bash md5.sh
+        done
    
    
        
