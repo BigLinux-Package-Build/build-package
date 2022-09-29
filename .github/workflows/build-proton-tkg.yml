@@ -24,7 +24,8 @@ jobs:
           chown user -R /tmp
           export CARGO_HOME="$PWD"
           cd wine-tkg-git/proton-tkg
-          su user -c "yes ''|PKGDEST=/tmp/proton-tkg makepkg --noconfirm -s"
+          #su user -c "yes ''|PKGDEST=/tmp/proton-tkg makepkg --noconfirm -s"
+          su user -c "yes ''|makepkg --noconfirm -s"
       
       - name: Publish Package on GitHub
         shell: bash
