@@ -26,7 +26,7 @@ jobs:
           sed -i "/'jack2'                 'lib32-jack2'/d" PKGBUILD
           sed -i "/'gst-plugins-good'      'lib32-gst-plugins-good'/d" PKGBUILD 
           #su user -c "yes|PKGDEST=/tmp/wine-tkg makepkg --noconfirm -s"
-          #su user -c "yes|makepkg --noconfirm -s"
+          su user -c "yes|makepkg --noconfirm -s"
           
       - name: sign package
         shell: bash -O extglob {0}
