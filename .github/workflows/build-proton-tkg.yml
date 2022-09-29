@@ -16,7 +16,7 @@ jobs:
       - name: Compile
         run: |
           echo -e "[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
-          pacman -Syu --noconfirm base-devel sudo git github-cli
+          pacman -Syu --noconfirm base-devel sudo git github-cli openssh gnupg coreutils rsync
           git clone https://github.com/Frogging-Family/wine-tkg-git.git
           
           useradd user -G wheel && echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -26,6 +26,32 @@ jobs:
           cd wine-tkg-git/proton-tkg
           #su user -c "yes ''|PKGDEST=/tmp/proton-tkg makepkg --noconfirm -s"
           su user -c "yes ''|makepkg --noconfirm -s"
+          
+      - name: sign package
+        shell: bash -O extglob {0}
+        run: |
+          # "Assinar Pacote"
+          cat <(echo -e "${{ inputs.gpg-key }}") | gpg --batch --import &>/dev/null
+          cd wine-tkg-git/wine-tkg-git
+          for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
+            gpg --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --detach-sign ${p}
+          done
+        
+      ## Tmate ##
+      #- name: Setup tmate session
+      #  uses: mxschmitt/action-tmate@v3
+    
+      - name: CheckSum
+        shell: bash -O extglob {0}
+        run: |
+          # "Checksum"
+          
+          cd wine-tkg-git/wine-tkg-git
+          echo '#!/bin/bash
+          for i in $(ls *.zst); do md5sum $i >> $i.md5; done
+          for i in $(ls *.sig | sed 's/.sig//'); do md5sum $i.sig >> $i.md5; done
+          exit 0' > md5.sh
+          bash md5.sh
       
       - name: Publish Package on GitHub
         shell: bash
