@@ -73,7 +73,7 @@ jobs:
           ssh-agent -a /tmp/ssh_agent.sock > /dev/null
           echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/id_rsa
           eval `ssh-agent -s`
-          #ssh-add /home/runner/.ssh/github_actions
+          ssh-add /home/runner/.ssh/id_rsa
           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
           
           #cd wine-tkg-git/wine-tkg-git
