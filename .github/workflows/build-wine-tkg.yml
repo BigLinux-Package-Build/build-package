@@ -78,14 +78,12 @@ jobs:
           
           cd wine-tkg-git/wine-tkg-git
           ls -lh
-          #if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
-          ##for i in *.zst *.sig *.md5; do
-          ##test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch
-          ##sleep 10
-          ##done
-          ##exit 0
-          
-          rsync -vapz -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.PKGBUILD_PORT }}" PKGBUILD ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch
+          if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
+          for i in *.zst *.sig *.md5; do
+          test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch
+          sleep 10
+          done
+          exit 0
           
       #- name: Telegram Alert Fail
         #if: ${{ failure() || cancelled() }}
