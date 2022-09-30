@@ -25,6 +25,7 @@ jobs:
           export CARGO_HOME="$PWD"
           cd wine-tkg-git/proton-tkg
           #su user -c "yes ''|PKGDEST=/tmp/proton-tkg makepkg --noconfirm -s"
+          sed -i 's/_LOCAL_PRESET="valve-exp-bleeding"/_LOCAL_PRESET="valve-exp"/' ../wine-tkg-git/wine-tkg-scripts/prepare.sh
           su user -c "yes ''|makepkg --noconfirm -s"
           
       - name: sign package
