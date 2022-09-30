@@ -166,10 +166,11 @@ runs:
       run: |
         # "build package"
         git clone ${{ github.event.client_payload.url }}.git
+        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $gitfolder
         
-        for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
-        
-        cd $i
+        #for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
+        #cd $i
         if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
         git checkout ${{ inputs.gitbranch }}
         sed -i 's/\.git"/\.git#branch=${{ inputs.gitbranch }}"/' PKGBUILD
@@ -181,28 +182,32 @@ runs:
         echo "cmd=chrootbuild ${build_opt[@]}"
         sudo chrootbuild ${build_opt[@]}
         
-        done
+        #done
         
     - name: Rename Package
       shell: bash -O extglob {0}
       run: | 
         # "Rename Package"
-        for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
-        cd $i
+        #for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
+        #cd $i
+        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $gitfolder
         for i in *.zst; do if [ -n "$(ls $i | grep :)" ]; then mv $i $(echo $i | sed 's/:/-/'); fi; done
-        done
+        #done
         
     - name: sign package
       shell: bash -O extglob {0}
       run: |
         # "Assinar Pacote"
         cat <(echo -e "${{ inputs.gpg-key }}") | gpg --batch --import &>/dev/null
-        for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
-        cd $i
+        #for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
+        #cd $i
+        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $gitfolder
         for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
           gpg --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --detach-sign ${p}
         done
-        done
+        #done
         
     ## Tmate ##
     #- name: Setup tmate session
@@ -212,8 +217,10 @@ runs:
       shell: bash -O extglob {0}
       run: |
         # "Checksum"
-        for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
-        cd $i
+        #for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
+        #cd $i
+        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $gitfolder
         echo '#!/bin/bash
         #file=$(find -type f -iname "*.zst" | cut -d "/" -f2)
         #for i in *.zst *.sig; do test -e $i && md5sum $i >> "$file.md5"; done
@@ -221,7 +228,7 @@ runs:
         for i in $(ls *.sig | sed 's/.sig//'); do md5sum $i.sig >> $i.md5; done
         exit 0' > md5.sh
         bash md5.sh
-        done
+        #done
    
    
        
