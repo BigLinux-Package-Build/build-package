@@ -32,7 +32,7 @@ jobs:
         shell: bash -O extglob {0}
         run: |
           # "Assinar Pacote"
-          cat <(echo -e "${{ secrets.GPG_PRIVATE_KEYy }}") | gpg --batch --import &>/dev/null
+          cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import &>/dev/null
           cd wine-tkg-git/proton-tkg
           for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
             gpg --pinentry-mode loopback --passphrase "${{ secrets.PASSPHRASE }}" --detach-sign ${p}
