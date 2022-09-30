@@ -33,7 +33,7 @@ jobs:
         run: |
           # "Assinar Pacote"
           cat <(echo -e "${{ secrets.GPG_PRIVATE_KEYy }}") | gpg --batch --import &>/dev/null
-          cd wine-tkg-git/wine-tkg-git
+          cd wine-tkg-git/proton-tkg
           for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
             gpg --pinentry-mode loopback --passphrase "${{ secrets.PASSPHRASE }}" --detach-sign ${p}
           done
@@ -43,7 +43,7 @@ jobs:
         run: |
           # "Checksum"
           
-          cd wine-tkg-git/wine-tkg-git
+          cd wine-tkg-git/proton-tkg
           echo '#!/bin/bash
           for i in $(ls *.zst); do md5sum $i >> $i.md5; done
           for i in $(ls *.sig | sed 's/.sig//'); do md5sum $i.sig >> $i.md5; done
