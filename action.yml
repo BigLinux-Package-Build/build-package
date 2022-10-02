@@ -59,6 +59,7 @@ runs:
         python3-pip
         sudo pip3 install meson
         sudo pip3 install ninja
+        
     - name: install pacman
       shell: bash
       env:
@@ -93,13 +94,13 @@ runs:
         sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
         sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
         echo '
-        [biglinux-stable]
-        SigLevel = PackageRequired
-        Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/pacman.conf
-        echo '
         [biglinux-testing]
         SigLevel = PackageRequired
         Server = https://repo.biglinux.com.br/testing/$arch' | sudo tee -a /etc/pacman.conf
+        echo '
+        [biglinux-stable]
+        SigLevel = PackageRequired
+        Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/pacman.conf
     
     - name: install keyrings
       shell: bash
@@ -134,12 +135,12 @@ runs:
         #sudo pacman-key --lsign-key 45EC44879815E2A6
         #sudo pacman-key --populate archlinux manjaro biglinux
         
-    - name: install manjaro-chrootbuild
+    - name: push keys
       shell: bash
       run: |
-        sudo git clone https://github.com/xivastudio/key.git
+        sudo git clone https://github.com/biglinux/biglinux-key.git
         sudo mkdir -p /etc/pacman.d/gnupg/
-        sudo cp -r key/* /etc/pacman.d/gnupg/
+        sudo cp -r biglinux-key/usr/share/pacman/keyrings/* /etc/pacman.d/gnupg/
         
     - name: install manjaro-chrootbuild
       shell: bash
@@ -159,16 +160,13 @@ runs:
         sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
         sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
         echo '
-        [biglinux-stable]
-        SigLevel = PackageRequired
-        Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
-        
-        #if [ "$EXTRAREPO" = "testing" ]; then
-        echo '
         [biglinux-testing]
         SigLevel = PackageRequired
         Server = https://repo.biglinux.com.br/testing/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
-        #fi
+        echo '
+        [biglinux-stable]
+        SigLevel = PackageRequired
+        Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         
         sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
         
