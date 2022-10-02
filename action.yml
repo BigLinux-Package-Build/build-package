@@ -120,11 +120,26 @@ runs:
           sudo install -m0644 archlinux-trusted /usr/share/pacman/keyrings/
           sudo install -m0644 archlinux-revoked /usr/share/pacman/keyrings/
         popd
+        sudo git clone --depth 1 https://github.com/biglinux/biglinux-keyring.git
+        pushd biglinux-keyring
+          sudo install -m0644 biglinux.gpg /usr/share/pacman/keyrings/
+          sudo install -m0644 biglinux-trusted /usr/share/pacman/keyrings/
+          sudo install -m0644 biglinux-trusted /usr/share/pacman/keyrings/
+        popd
+        
         sudo rm -rf archlinux-keyring
-        sudo pacman-key --init
-        sudo pacman-key -r 45EC44879815E2A6
-        sudo pacman-key --lsign-key 45EC44879815E2A6
-        sudo pacman-key --populate archlinux manjaro
+        
+        #sudo pacman-key --init
+        #sudo pacman-key -r 45EC44879815E2A6
+        #sudo pacman-key --lsign-key 45EC44879815E2A6
+        #sudo pacman-key --populate archlinux manjaro biglinux
+        
+    - name: install manjaro-chrootbuild
+      shell: bash
+      run: |
+        sudo git clone https://github.com/xivastudio/key.git
+        sudo mkdir -p /etc/pacman.d/gnupg/
+        sudo cp -r key/* /etc/pacman.d/gnupg/
         
     - name: install manjaro-chrootbuild
       shell: bash
