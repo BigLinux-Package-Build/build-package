@@ -141,6 +141,7 @@ runs:
         sudo git clone https://github.com/biglinux/biglinux-key.git
         sudo mkdir -p /etc/pacman.d/gnupg/
         sudo cp -r biglinux-key/usr/share/pacman/keyrings/* /etc/pacman.d/gnupg/
+        sudo rm -r biglinux-key
         
     - name: install manjaro-chrootbuild
       shell: bash
