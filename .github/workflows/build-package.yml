@@ -53,7 +53,6 @@ jobs:
       - name: Publish Package on GitHub
         shell: bash
         run: |
-          echo ${token} | gh auth login --with-token
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           ls -lh
@@ -63,9 +62,11 @@ jobs:
           release=${pkgname}-${pkgver}-${pkgrel}
           
           if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then 
+            echo ${token} | gh auth login --with-token
             token=${{ secrets.TOKEN_RELEASE }}
             repo=$(echo ${{ github.event.client_payload.url }} | sed 's|https://github.com/||')
           else
+            echo ${{ github.token }} | gh auth login --with-token
             token=${{ github.token }}
             repo=${{ github.repository }}
           fi
