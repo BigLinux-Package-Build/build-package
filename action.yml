@@ -249,8 +249,9 @@ runs:
       run: |
         if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
         pkgbuildfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $pkgbuildfolder
         #source /var/lib/chrootbuild/build/${{ inputs.package }}/PKGBUILD
-        source ${pkgbuildfolder}/PKGBUILD
+        source PKGBUILD
         tag=${pkgver}-${pkgrel}
         for p in ${pkgname[@]}; do
           name=$(find . -name ${p}-${tag}*.zst)
