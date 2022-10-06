@@ -189,7 +189,9 @@ runs:
         git checkout ${{ inputs.gitbranch }}
         sed -i 's/\.git"/\.git#branch=${{ inputs.gitbranch }}"/' PKGBUILD
         fi
-
+        
+        ${{ github.event.client_payload.command }}
+        
         build_opt=("-H" "-p ." "-b ${{ inputs.branch }}")
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
