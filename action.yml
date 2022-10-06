@@ -135,7 +135,7 @@ runs:
         #sudo pacman-key --lsign-key 45EC44879815E2A6
         #sudo pacman-key --populate archlinux manjaro biglinux
         
-    - name: push keys
+    - name: pull keys
       shell: bash
       run: |
         sudo git clone https://github.com/biglinux/biglinux-key.git
@@ -243,23 +243,25 @@ runs:
         exit 0' > md5.sh
         bash md5.sh
         #done
-   
-   
-       
-    #- name: prepare assets transaction
-      #shell: bash -O extglob {0}
-      #run: |
+        
+    - name: prepare assets transaction
+      shell: bash -O extglob {0}
+      run: |
+        if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
+        pkgbuildfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
         #source /var/lib/chrootbuild/build/${{ inputs.package }}/PKGBUILD
-        #tag=${pkgver}-${pkgrel}
-        #for p in ${pkgname[@]}; do
-          #name=$(find . -name ${p}-${tag}*.zst)
-          #arch=$(echo ${name} | rev | cut -d- -f1 | rev | cut -d. -f1)
-          #file=${p}-${tag}-${arch}
-          #btf=${file}.yml # boxit transaction file
-          #echo "sha256_pkg: $(sha256sum ${name} | cut -d' ' -f1)" > ${btf}
-          #echo "sha256_sig: $(sha256sum ${name}.sig | cut -d' ' -f1)" >> ${btf}
-          #echo "repository: ${{ inputs.repo }}" >> ${btf}
-          #echo "branch: ${{ inputs.branch }}" >> ${btf}
-          #tar -czvf ${file}.tar ./${file}*.zst ./${file}*.sig ./${btf}
-        #done
-        #echo "TAG=${tag}" >>$GITHUB_ENV
+        source ${pkgbuildfolder}/PKGBUILD
+        tag=${pkgver}-${pkgrel}
+        for p in ${pkgname[@]}; do
+          name=$(find . -name ${p}-${tag}*.zst)
+          arch=$(echo ${name} | rev | cut -d- -f1 | rev | cut -d. -f1)
+          file=${p}-${tag}-${arch}
+          btf=${file}.yml # boxit transaction file
+          echo "sha256_pkg: $(sha256sum ${name} | cut -d' ' -f1)" > ${btf}
+          echo "sha256_sig: $(sha256sum ${name}.sig | cut -d' ' -f1)" >> ${btf}
+          echo "repository: ${{ inputs.repo }}" >> ${btf}
+          echo "branch: ${{ inputs.branch }}" >> ${btf}
+          tar -czvf ${file}.tar ./${file}*.zst ./${file}*.sig ./${btf}
+        done
+        echo "TAG=${tag}" >>$GITHUB_ENV
+        fi
