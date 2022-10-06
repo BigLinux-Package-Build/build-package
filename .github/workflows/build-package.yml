@@ -54,16 +54,31 @@ jobs:
         shell: bash
         run: |
           release=$(find . -name *.zst | cut -d "/" -f2)
-          echo ${{ github.token }} | gh auth login --with-token
+          if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then 
+            token=${{ secrets.GITBARNATOKEN }}
+            repo=$(echo ${{ github.event.client_payload.url }} | sed 's|https://github.com/||')
+          else
+            token=${{ github.token }}
+            repo=${{ github.repository }}
+          fi
+          
+          # echo ${{ github.token }} | gh auth login --with-token
+          echo ${token} | gh auth login --with-token
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           ls -lh
-          gh release create ${release} --title ${release} --repo ${{ github.repository }} --notes "automated release from ${{ github.event.client_payload.url }}" || echo "release already exists"
-          GITHUB_LINK=https://github.com/${GITHUB_REPOSITORY}/releases/download/${release}
-          for i in .zst .sig .tar .md5; do
-          find -iname "*$i" -exec gh release upload ${release} --repo ${GITHUB_REPOSITORY} --clobber {} \;
-          done
           
+          # gh release create ${release} --title ${release} --repo ${{ github.repository }} --notes "automated release from ${{ github.event.client_payload.url }}" || echo "release already exists"
+          #GITHUB_LINK=https://github.com/${GITHUB_REPOSITORY}/releases/download/${release}
+          # for i in .zst .sig .tar .md5; do
+          #   find -iname "*$i" -exec gh release upload ${release} --repo ${GITHUB_REPOSITORY} --clobber {} \;
+          # done
+          
+          gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from ${{ github.event.client_payload.url }}" || echo "release already exists"
+          GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
+          for i in .zst .sig .tar .md5; do
+            find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
+          done
        
       - name: Push to Repo
         shell: bash
