@@ -53,6 +53,11 @@ jobs:
       - name: Publish Package on GitHub
         shell: bash
         run: |
+          echo ${token} | gh auth login --with-token
+          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          cd $gitfolder
+          ls -lh
+          
           #Release#
           source PKGBUILD
           release=${pkgname}-${pkgver}-${pkgrel}
@@ -64,11 +69,6 @@ jobs:
             token=${{ github.token }}
             repo=${{ github.repository }}
           fi
-          
-          echo ${token} | gh auth login --with-token
-          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-          cd $gitfolder
-          ls -lh
           
           gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from ${{ github.event.client_payload.url }}" || echo "release already exists"
           GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
