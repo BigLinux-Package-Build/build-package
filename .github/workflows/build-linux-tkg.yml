@@ -19,7 +19,7 @@ jobs:
           echo -e "[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
           pacman -Syu --noconfirm sudo git github-cli openssh gnupg coreutils rsync wget
           
-          # curl -s https://api.github.com/repos/Frogging-Family/linux-tkg/releases/latest | grep "x86_64.pkg.tar.zst" | cut -d : -f 2,3 | tr -d \" | grep "https" | wget -ci -
+          curl -s https://api.github.com/repos/Frogging-Family/linux-tkg/releases/latest | grep "x86_64.pkg.tar.zst" | cut -d : -f 2,3 | tr -d \" | grep "https" | wget -ci -
           
       # # Tmate ##
       # - name: Setup tmate session
