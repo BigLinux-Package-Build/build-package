@@ -1,0 +1,92 @@
+name: Build Linux TKG
+
+
+on:
+  repository_dispatch:
+    types:
+      - TKG/linux
+  workflow_dispatch:
+  
+jobs:
+    build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: echo PayLoads
+        run: |
+          echo "url: ${{ github.event.client_payload.url }}"
+          echo "branch: ${{ github.event.client_payload.branch }}"
+          echo "extrarepo: ${{ github.event.client_payload.extrarepo }}"
+      - name: Download and Sig
+        shell: bash
+        run: |
+          curl -s https://api.github.com/repos/Frogging-Family/linux-tkg/releases/latest | grep "x86_64.pkg.tar.zst" | cut -d : -f 2,3 | tr -d \" | wget -ci -
+          
+          cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import &>/dev/null
+          for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
+            gpg --pinentry-mode loopback --passphrase "${{ secrets.PASSPHRASE }}" --detach-sign ${p}
+          done
+          
+      ## Tmate ##
+      #- name: Setup tmate session
+        #uses: mxschmitt/action-tmate@v3
+       
+      - name: Push to Repo
+        shell: bash
+        run: |
+          echo "## ssh setup"
+          mkdir -p /home/runner/.ssh
+          touch /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          #ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+          echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/github_actions
+          eval `ssh-agent -s`
+          ssh-add /home/runner/.ssh/github_actions
+          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
+          
+          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          cd $gitfolder
+          ls -lh
+          if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
+          for i in *.zst *.sig *.md5; do
+          test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch
+          sleep 10
+          done
+          exit 0
+          
+      #- name: Telegram Alert End
+        #shell: bash
+        #run: |
+          #curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Pacote: ${{ github.event.action }} criado e enviado a partir do branch ${{ github.ref_name }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+          
+      - name: Telegram Alert Fail
+        if: ${{ failure() || cancelled() }}
+        run: |
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
+          
+        ## Tmate ##
+      #- name: Setup tmate session
+      #  uses: mxschmitt/action-tmate@v3 
+          
+        
+#      - name: upload-cdn77
+#        shell: bash -O extglob {0}
+#        run: |
+#          # if is not yet supported in composite https://github.com/actions/runner/blob/main/docs/adrs/0549-composite-run-steps.md#if-condition
+#          if [ -z "${{ inputs.cdn77-host }}" ] || [ -z "${{ inputs.cdn77-user }}" ] || [ -z "${{ inputs.cdn77-pwd }}" ]; then 
+#            echo "## not (all) credentials given for cdn77 upload"
+#            exit 0
+#          fi
+#          
+#          echo "## cdn77 upload"
+#          
+#          ssh-keyscan -t rsa ${{ inputs.cdn77-host }} >> /home/runner/.ssh/known_hosts
+#          ## create target dir
+#          sshpass -p "${{ inputs.cdn77-pwd }}" rsync -vaP --stats -e ssh ${{ inputs.edition }} \
+#            ${{ inputs.cdn77-user }}@${{ inputs.cdn77-host }}:/www/
+#          # upload
+#          sshpass -p "${{ inputs.cdn77-pwd }}" rsync -vaP \
+#            --stats -e ssh ${{ steps.upload-prepare.outputs.upload-files }} \
+#            ${{ inputs.cdn77-user }}@${{ inputs.cdn77-host }}:/www/${{ inputs.edition }}/${{ inputs.version }}/
