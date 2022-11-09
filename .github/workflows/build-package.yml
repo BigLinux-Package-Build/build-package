@@ -60,7 +60,6 @@ jobs:
           #Release#
           source PKGBUILD
           release=${pkgname}-${pkgver}-${pkgrel}
-          echo $release
           
           if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then 
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
