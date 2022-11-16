@@ -7,7 +7,7 @@ on:
       - biglinux/*
       - AUR/*
       - xivastudio/*
-      - TKG/mesa-git
+      - TKG/mesa-tkg-git
   
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
