@@ -4,9 +4,7 @@ name: Build Package
 on:
   repository_dispatch:
     types:
-      - biglinux/*
-      - AUR/*
-      - xivastudio/*
+      - TKG/mesa-tkg-git
   
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
@@ -22,12 +20,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
-#       - name: Telegram Alert Start
-#         shell: bash
-#         run: |
-#           curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Criando ${{ github.event.action }} do repositório ${{ github.event.client_payload.branch }} enviado por ${{ github.actor }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
-      
       - name: echo PayLoads
         run: |
           echo "url: ${{ github.event.client_payload.url }}"
@@ -57,8 +49,9 @@ jobs:
           ls -lh
           
           #Release#
-          source PKGBUILD
-          release=${pkgname}-${pkgver}-${pkgrel}
+          # sed -i '/plain/d' PKGBUILD
+          # source PKGBUILD
+          release=mesa-tkg-git
           
           if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then 
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
