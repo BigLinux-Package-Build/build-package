@@ -1,4 +1,4 @@
-name: Build Package
+name: Build Mesa TKG
 
 # Controls when the workflow will run
 on:
