@@ -28,10 +28,47 @@ jobs:
           echo "xanmod: ${{ github.event.client_payload.xanmod }}"
           echo "Kernel version: ${{ github.event.client_payload.kver }}"
           
-      # - name: Extra Command
-      #   shell: bash
-      #   run: |
-      #       module=$(find /usr/lib/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "/" -f1 | rev) && sed -i "s/_linuxprefix=.*/_linuxprefix=linux-xanmod/;s/_extramodules=.*/_extramodules=${module}/;s/_kernver=.*/_kernver=${module}/" PKGBUILD
+#       - name: Extra Command
+#         shell: bash
+#         run: |
+#             module=$(find /usr/lib/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "/" -f1 | rev) && sed -i "s/_linuxprefix=.*/_linuxprefix=linux-xanmod/;s/_extramodules=.*/_extramodules=${module}/;s/_kernver=.*/_kernver=${module}/" PKGBUILD
+#             
+#              && 
+#             
+#             echo "module=$(find /usr/lib/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "/" -f1 | rev)"
+#             
+#             sed -i "/_linuxprefix/{h;s/.*/module=$(find \/usr\/lib\/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "\/" -f1 | rev)/;p;x;}" PKGBUILD
+#             
+#             sed -i 's/_linuxprefix=.*/_linuxprefix=linux-xanmod/;s/_extramodules=.*/_extramodules=${module}/;s/_kernver=.*/_kernver=${module}/' PKGBUILD
+#             
+#             
+#             find="find \/usr\/lib\/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "'"\/"'" -f1 | rev" && 
+#             
+#             sed -i '1i\' -e "module=$find" PKGBUILD
+#             sed -i "/_linuxprefix/{h;s/.*/module=$find/;p;x;}" PKGBUILD
+#             
+#             o _extramodules precisa conter o endereço da pasta dos modulodos da versão do kernel
+#             payload .kver tem o numero da versão do kernel
+#             precisa fazer um find 6.0.7*xanmod* para encontrar o modulo, mas isso dentro do pkgbuild pq precisa estar com o kernel instalado
+#             
+#             precisa escrever dentro do pkgbuild a string:
+#             
+#             module=$(find /usr/lib/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "/" -f1 | rev)
+#             
+#             interpretando o payload, então antes de mandar escrever, tem que pegar o payload e inputar
+#             
+#             sed  '/_linuxprefix/{h;s/.*/module=$('"$find"')/;p;x;}' PKGBUILD
+#             isso escre em varias linhas, precisa escrever uma linha só
+#             
+#             find="find \/usr\/lib\/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "'"\/"'" -f1 | rev"
+#             && 
+#             sed -i '1 imodule=$('"$find"')' PKGBUILD
+#             && 
+
+
+            # sed -i 's/_linuxprefix=.*/_linuxprefix='""'/;s/_extramodules=.*/_extramodules=$('"$find"')/;s/_kernver=.*/_kernver=$('"$find"')/' PKGBUILD
+            
+            
             
       - name: Makepkg Build and Check
         id: makepkg
@@ -44,7 +81,7 @@ jobs:
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
-          extracommand: 'module=$(find /usr/lib/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "/" -f1 | rev) && sed -i "s/_linuxprefix=.*/_linuxprefix=linux-xanmod/;s/_extramodules=.*/_extramodules=${module}/;s/_kernver=.*/_kernver=${module}/" PKGBUILD'
+          extracommand: 'sed -i 's/_linuxprefix=.*/_linuxprefix='""'/;s/_extramodules=.*/_extramodules=$('"$find"')/;s/_kernver=.*/_kernver=$('"$find"')/' PKGBUILD'
           
       # # Tmate ##
       # - name: Setup tmate session
