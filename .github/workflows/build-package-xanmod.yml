@@ -28,10 +28,10 @@ jobs:
           echo "xanmod: ${{ github.event.client_payload.xanmod }}"
           echo "Kernel version: ${{ github.event.client_payload.kver }}"
           
-      - name: Extra Command
-        shell: bash
-        run: |
-            module=$(find /usr/lib/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "/" -f1 | rev) && sed -i "s/_linuxprefix=.*/_linuxprefix=linux-xanmod/;s/_extramodules=.*/_extramodules=${module}/;s/_kernver=.*/_kernver=${module}/" PKGBUILD
+      # - name: Extra Command
+      #   shell: bash
+      #   run: |
+      #       module=$(find /usr/lib/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "/" -f1 | rev) && sed -i "s/_linuxprefix=.*/_linuxprefix=linux-xanmod/;s/_extramodules=.*/_extramodules=${module}/;s/_kernver=.*/_kernver=${module}/" PKGBUILD
             
       - name: Makepkg Build and Check
         id: makepkg
