@@ -4,7 +4,7 @@ name: Build XanMod
 on:
   repository_dispatch:
     types:
-      - XanMod/*
+      - linux-xanmod*/*
       
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:

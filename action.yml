@@ -196,9 +196,6 @@ runs:
         ${{ github.event.client_payload.command }}
         ${{ inputs.extracommand }}
         
-        cat PKGBUILD
-        sleep 20
-        
         build_opt=("-H" "-p ." "-b ${{ inputs.branch }}")
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
