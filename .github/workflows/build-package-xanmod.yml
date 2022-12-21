@@ -81,7 +81,7 @@ jobs:
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
-          extracommand: find="find \/usr\/lib\/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "'"\/"'" -f1 | rev" && sed -i 's/_linuxprefix=.*/_linuxprefix='"${{ github.event.client_payload.xanmod }}"'/;s/_extramodules=.*/_extramodules=$('"$find"')/;s/_kernver=.*/_kernver=$('"$find"')/' PKGBUILD
+          extracommand: find="find \/usr\/lib\/modules -type d -iname "${{ github.event.client_payload.kver }}*xanmod*" | rev | cut -d "'"\/"'" -f1 | rev" && sed -i 's/_linuxprefix=.*/_linuxprefix='"${{ github.event.client_payload.xanmod }}"'/;s/_extramodules=.*/_extramodules=$('"$find"')/;s/_kernver=.*/_kernver=$('"$find"')/' PKGBUILD && sed -i 's/<\/usr\/lib\/modules\/${_extraver}\/version/'"$find"'/' PKGBUILD
           
       # # Tmate ##
       # - name: Setup tmate session
