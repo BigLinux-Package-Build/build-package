@@ -140,7 +140,7 @@ jobs:
           ls -lh
           if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
           for i in *.zst *.sig *.md5; do
-          test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch/xanmod
+          test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch
           sleep 10
           done
           exit 0
