@@ -26,7 +26,7 @@ jobs:
           echo "url: ${{ github.event.client_payload.url }}"
           echo "branch: ${{ github.event.client_payload.branch }}"
           echo "xanmod: ${{ github.event.client_payload.xanmod }}"
-          echo "xanmod major: ${{ github.event.client_payload.kmajor }}"
+          echo "xanmod version: ${{ github.event.client_payload.kver }}"
           echo "version rel: ${{ github.event.client_payload.xanver }}"
           
 #       - name: Extra Command
