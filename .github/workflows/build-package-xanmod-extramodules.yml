@@ -1,4 +1,4 @@
-name: Build XanMod
+name: Build XanMod ExtraModule
 
 on:
   repository_dispatch:
