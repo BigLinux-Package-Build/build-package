@@ -3,7 +3,7 @@ name: Build XanMod ExtraModule
 on:
   repository_dispatch:
     types:
-      - linux-xanmod*/*
+      - linux-xanmod-extramodule/*
       
 jobs:
   build:
