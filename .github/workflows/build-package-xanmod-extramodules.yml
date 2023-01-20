@@ -1,0 +1,132 @@
+name: Build XanMod
+
+on:
+  repository_dispatch:
+    types:
+      - linux-xanmod*/*
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: manjarolinux/base
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          sudo pacman -Sy --noconfirm --needed \
+          git \
+          openssh \
+          xz \
+          tmate
+          
+          #add biglinux repository
+          sudo sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf
+          sudo sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf
+          sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
+          sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
+          echo '
+          [biglinux-testing]
+          SigLevel = PackageRequired
+          Server = https://repo.biglinux.com.br/testing/$arch' | sudo tee -a /etc/pacman.conf
+          echo '
+          [biglinux-stable]
+          SigLevel = PackageRequired
+          Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/pacman.conf
+          
+          sudo git clone --depth 1 https://github.com/biglinux/biglinux-keyring.git
+          pushd biglinux-keyring
+            sudo install -m0644 biglinux.gpg /usr/share/pacman/keyrings/
+            sudo install -m0644 biglinux-trusted /usr/share/pacman/keyrings/
+            sudo install -m0644 biglinux-trusted /usr/share/pacman/keyrings/
+          popd
+          sudo rm -rf biglinux-keyring
+          
+          sudo git clone https://github.com/biglinux/biglinux-key.git
+          sudo mkdir -p /etc/pacman.d/gnupg/
+          sudo cp -r biglinux-key/usr/share/pacman/keyrings/* /etc/pacman.d/gnupg/
+          sudo rm -r biglinux-key
+          
+          sudo pacman -Sy
+      
+      - name: echo PayLoads
+        run: |
+          echo "repo: ${{ github.event.client_payload.repo }}"
+          echo "mod: ${{ github.event.client_payload.mod }}"
+          echo "mkdepends: ${{ github.event.client_payload.mkdepends }}"
+          echo "xanmod: ${{ github.event.client_payload.xanmod }}"
+            
+      - name: Makepkg Build and Check
+        id: makepkg
+        uses: BigLinux-Package-Build/xanmod-extra-module@main
+        with:
+          repo: ${{ github.event.client_payload.repo }}
+          mod: ${{ github.event.client_payload.mod }}
+          mkdepends: ${{ github.event.client_payload.mkdepends }}
+          xanmod: ${{ github.event.client_payload.xanmod }}
+          
+      # # Tmate ##
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+        
+      - name: Publish Package on GitHub
+        shell: bash
+        run: |
+          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          cd $gitfolder
+          ls -lh
+          
+          #Release#
+          source PKGBUILD
+          release=${pkgname}-${pkgver}-${pkgrel}
+          
+          if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then 
+            echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
+            # token=${{ secrets.TOKEN_RELEASE }}
+            repo=$(echo ${{ github.event.client_payload.url }} | sed 's|https://github.com/||')
+          else
+            echo ${{ github.token }} | gh auth login --with-token
+            # token=${{ github.token }}
+            repo=${{ github.repository }}
+          fi
+          
+          gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from ${{ github.event.client_payload.url }}" || echo "release already exists"
+          GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
+          for i in .zst .sig .tar .md5; do
+            find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
+          done
+       
+      - name: Push to Repo
+        shell: bash
+        run: |
+          echo "## ssh setup"
+          mkdir -p /home/runner/.ssh
+          touch /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          #ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+          echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/github_actions
+          eval `ssh-agent -s`
+          ssh-add /home/runner/.ssh/github_actions
+          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
+          
+          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          cd $gitfolder
+          ls -lh
+          if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
+          for i in *.zst *.sig *.md5; do
+          test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch
+          sleep 10
+          done
+          
+      - name: Telegram Alert Fail
+        if: ${{ failure() || cancelled() }}
+        run: |
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
+          
+        ## Tmate ##
+      #- name: Setup tmate session
+      #  uses: mxschmitt/action-tmate@v3 
+          
+        
