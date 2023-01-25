@@ -39,7 +39,7 @@ jobs:
         uses: BigLinux-Package-Build/build-package@main
         with:
           package: pkgbuild
-          branch: stable
+          branch: ${{ github.event.client_payload.branch_build }}
           gitbranch: ${{ github.event.client_payload.branch }}
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
