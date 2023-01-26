@@ -33,13 +33,15 @@ jobs:
           echo "url: ${{ github.event.client_payload.url }}"
           echo "branch: ${{ github.event.client_payload.branch }}"
           echo "extrarepo: ${{ github.event.client_payload.extrarepo }}"
+          echo "branch_build: ${{ github.event.client_payload.branch_build }}"
+          
       - name: Makepkg Build and Check
         id: makepkg
         # You may pin to the exact commit or the version.
         uses: BigLinux-Package-Build/build-package@main
         with:
           package: pkgbuild
-          branch: ${{ github.event.client_payload.branch_build }}
+          branch: stable
           gitbranch: ${{ github.event.client_payload.branch }}
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
