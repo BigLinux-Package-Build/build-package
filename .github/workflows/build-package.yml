@@ -36,7 +36,7 @@ jobs:
           echo "branch_build: ${{ github.event.client_payload.branch_build }}"
           
           if [ -z "${{ github.event.client_payload.branch_build }}" ];then
-            echo "branch_build=stable" >> $GITHUB_OUTPUT
+            echo "branch_build=stable" >> $GITHUB_ENV
           else
             echo "branch_build=${{ github.event.client_payload.branch_build }}" >> $GITHUB_ENV
           fi
