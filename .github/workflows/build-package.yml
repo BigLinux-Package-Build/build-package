@@ -38,10 +38,10 @@ jobs:
           if [ -z "${{ github.event.client_payload.branch_build }}" ];then
             echo "branch_build=stable" >> $GITHUB_OUTPUT
           else
-            echo "branch_build=${{ github.event.client_payload.branch_build }}" >> $GITHUB_OUTPUT
+            echo "branch_build=${{ github.event.client_payload.branch_build }}" >> $GITHUB_ENV
           fi
           
-          echo "new branch_build: ${{ output.branch_build }}"
+          echo "new branch_build: ${{ env.branch_build }}"
           
       - name: Makepkg Build and Check
         id: makepkg
@@ -49,7 +49,7 @@ jobs:
         uses: BigLinux-Package-Build/build-package@main
         with:
           package: pkgbuild
-          branch: ${{ output.branch_build }}
+          branch: ${{ env.branch_build }}
           gitbranch: ${{ github.event.client_payload.branch }}
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
