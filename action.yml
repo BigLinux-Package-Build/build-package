@@ -198,6 +198,8 @@ runs:
         ${{ github.event.client_payload.command }}
         ${{ inputs.extracommand }}
         
+        echo "branch_build=${{ inputs.branch }}"
+        
         build_opt=("-H" "-p ." "-b ${{ inputs.branch }}")
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
