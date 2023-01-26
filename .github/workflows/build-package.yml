@@ -54,7 +54,6 @@ jobs:
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
-          if: 
           
       # # Tmate ##
       # - name: Setup tmate session
