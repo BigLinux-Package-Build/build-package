@@ -36,7 +36,9 @@ jobs:
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
-          extracommand: sed -i '/provides=/s/)/ vulkan-swrast)/' PKGBUILD ; sed -i '/conflicts=/s/)/ '"'vulkan-swrast'"')/' PKGBUILD
+          extracommand: sed -i "$(sed -n '/provides=/{=;q}' PKGBUILD)s/)/ vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;q}' PKGBUILD)s/)/ '"'vulkan-swrast'"')/" PKGBUILD ; sed -i "$(sed -n '/provides=/{=;2q}' PKGBUILD | tail -n1)s/)/ lib32-vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;2q}' PKGBUILD | tail -n1)s/)/ '"'lib32-vulkan-swrast'"')/" PKGBUILD
+                          
+                      
           
       # # Tmate ##
       # - name: Setup tmate session
