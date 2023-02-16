@@ -192,7 +192,7 @@ runs:
         #cd $i
         if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
         git checkout ${{ inputs.gitbranch }}
-        sed -i 's/\.git"/\.git#branch=${{ inputs.gitbranch }}"/' PKGBUILD
+        sed -i '/source=/s/\.git"/\.git#branch=${{ inputs.gitbranch }}"/' PKGBUILD
         fi
         
         ${{ github.event.client_payload.command }}
