@@ -74,6 +74,10 @@ jobs:
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
             # token=${{ secrets.TOKEN_RELEASE }}
             repo=$(echo ${{ github.event.client_payload.url }} | sed 's|https://github.com/||')
+          elif [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/xivastudio/)" ]; then 
+            echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
+            # token=${{ secrets.TOKEN_RELEASE }}
+            repo=$(echo ${{ github.event.client_payload.url }} | sed 's|https://github.com/||')
           else
             echo ${{ github.token }} | gh auth login --with-token
             # token=${{ github.token }}
