@@ -158,6 +158,8 @@ runs:
         popd
         sudo rm -rf manjaro-chrootbuild
         
+        source <(curl -s https://gitlab.manjaro.org/packages/core/manjaro-release/-/raw/master/lsb-release)
+        
         #add biglinux repository
         sudo sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
         sudo sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
