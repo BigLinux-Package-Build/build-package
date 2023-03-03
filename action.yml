@@ -172,8 +172,12 @@ runs:
         SigLevel = PackageRequired
         Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         
-        sudo sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/chrootbuild/pacman.conf.x86_64
-        sudo sed -i 's|https://repo.manjaro.org/repo|https://mnvoip.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
+        sudo sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/chrootbuild/pacman.conf.x86_64,
+        
+        # sudo sed -i 's|https://repo.manjaro.org/repo|https://mnvoip.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
+        sudo sed -i 's|https://repo.manjaro.org/repo|https://gsl-syd.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
+        # sudo sed -i 's|https://repo.manjaro.org/repo|https://forksystems.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
+        # sudo sed -i 's|https://repo.manjaro.org/repo|https://ridgewireless.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
         sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
         
     # # Tmate ##
