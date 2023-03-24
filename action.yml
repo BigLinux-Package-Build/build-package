@@ -182,9 +182,9 @@ runs:
         # sudo sed -i 's|https://repo.manjaro.org/repo|https://ridgewireless.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
         sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
         
-    # # Tmate ##
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
+    # Tmate ##
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
         
     - name: build package
       shell: bash
