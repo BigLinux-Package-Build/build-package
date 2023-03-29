@@ -88,6 +88,7 @@ runs:
         sudo install -m644 makepkg.conf /etc/
         sudo mkdir -p /etc/pacman.d
         sudo touch /etc/pacman.d/mirrorlist
+        sudo wget https://raw.githubusercontent.com/BigLinux-Package-Build/manjaro-mirror/main/mirrorlist -O /etc/pacman.d/mirrorlist
         popd
         sudo rm -rf pacman
         
@@ -175,6 +176,9 @@ runs:
         Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         
         sudo sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/chrootbuild/pacman.conf.x86_64
+        
+        mirror=$(cat /etc/pacman.d/mirrorlist | head -n1 | awk '{print $3}' | sed -ne 's/\(manjaro\).*/\1/p')
+        sudo sed -i "s|https://repo.manjaro.org/repo|${mirror}|" /usr/lib/manjaro-chrootbuild/util.sh
         
         # sudo sed -i 's|https://repo.manjaro.org/repo|https://mnvoip.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
         #sudo sed -i 's|https://repo.manjaro.org/repo|https://mirror2.sandyriver.net/pub/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
