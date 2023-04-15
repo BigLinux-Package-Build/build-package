@@ -32,13 +32,16 @@ inputs:
     description: 'boxit user ssh private key'
     required: false
   extrarepo:
-    description: 'extra repository to buld package'
+    description: 'extra repository to build package'
     required: false
   gitbranch:
-    description: 'extra repository to buld package'
+    description: 'extra repository to build package'
     required: false
   extracommand:
-    description: 'extra command to buld package'
+    description: 'extra command to build package'
+    required: false
+  extrapackage:
+    description: 'extra package to build'
     required: false
     
 runs:
@@ -213,6 +216,8 @@ runs:
         build_opt=("-H" "-p ." "-b ${{ inputs.branch }}")
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
+        [[ -n "${{ inputs.extrapackage }}" ]] && build_opt+=("-i ${{ inputs.extrapackage }}")
+        
         echo "cmd=chrootbuild ${build_opt[@]}"
         sudo chrootbuild ${build_opt[@]}
         
