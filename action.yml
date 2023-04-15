@@ -216,7 +216,7 @@ runs:
         build_opt=("-H" "-p ." "-b ${{ inputs.branch }}")
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
-        [[ -n "${{ inputs.extrapackage }}" ]] && build_opt+=("-i ${{ inputs.extrapackage }}")
+        #[[ -n "${{ inputs.extrapackage }}" ]] && build_opt+=("-i ${{ inputs.extrapackage }}")
         
         echo "cmd=chrootbuild ${build_opt[@]}"
         sudo chrootbuild ${build_opt[@]}
