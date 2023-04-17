@@ -101,7 +101,6 @@ jobs:
        
       - name: Push to Repo
         shell: bash
-        if: ${{ github.event.client_payload.type != biglinux/biglinux-settings-gnome }}
         run: |
           echo "## ssh setup"
           mkdir -p /home/runner/.ssh
