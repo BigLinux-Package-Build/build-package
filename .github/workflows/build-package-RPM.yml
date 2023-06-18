@@ -1,0 +1,14 @@
+name: Build Package RPM
+on:
+  repository_dispatch:
+    types:
+      - biglinux-RPM/*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: oraclelinux:9
+    steps:
+      - uses: actions/checkout@v3
+      
+

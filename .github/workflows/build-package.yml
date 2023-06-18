@@ -61,7 +61,7 @@ jobs:
       #   uses: mxschmitt/action-tmate@v3
         
       - name: Publish Package on GitHub
-        shell: bash
+        shell: bash -O extglob {0}
         run: |
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
