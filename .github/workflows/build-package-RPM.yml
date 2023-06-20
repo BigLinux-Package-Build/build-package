@@ -14,6 +14,7 @@ jobs:
         shell: bash
         run: |
           git clone ${{ github.event.client_payload.url }}.git
+          echo ${{ github.event.client_payload.repository }} | cut -d "/" -f2
           cp -ra $(echo ${{ github.event.client_payload.repository }} | cut -d "/" -f2)/rpmbuild/ $HOME
           pushd $HOME
           rpmbuild -ba rpmbuild/SPECS/rpmbuild.spec
