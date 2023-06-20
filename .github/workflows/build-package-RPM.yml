@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: oraclelinux:9
+    #container: oraclelinux:9
     steps:
       - uses: actions/checkout@v3
       - name: Setup tmate session
