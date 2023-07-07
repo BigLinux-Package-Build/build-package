@@ -118,7 +118,7 @@ jobs:
           echo "7"
           ssh-add /home/runner/.ssh/github_actions
           echo "8"
-          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
+          # ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
           
           
       # # Tmate ##
