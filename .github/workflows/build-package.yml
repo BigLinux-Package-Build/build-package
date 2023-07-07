@@ -120,21 +120,25 @@ jobs:
           echo "8"
           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
           
-          echo "9"
-          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-          echo "10"
-          cd $gitfolder
-          echo "11"
-          ls -lh
-          echo "12"
-          if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
-          echo "13"
-          for i in *.zst *.sig *.md5; do
-          test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
-          sleep 10
-          done
-          echo "14"
-          exit 0
+          
+      # # Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+          # echo "9"
+          # gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          # echo "10"
+          # cd $gitfolder
+          # echo "11"
+          # ls -lh
+          # echo "12"
+          # if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
+          # echo "13"
+          # for i in *.zst *.sig *.md5; do
+          # test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
+          # sleep 10
+          # done
+          # echo "14"
+          # exit 0
           
       #- name: Telegram Alert End
         #shell: bash
