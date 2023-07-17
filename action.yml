@@ -197,6 +197,7 @@ runs:
       shell: bash
       run: |
         echo "Clean System"
+        df -h
         sudo rm -rf \
           /imagegeneration \
           /opt/az \
@@ -221,7 +222,9 @@ runs:
           /usr/local/lib/node_modules \
           /usr/local/share/powershell \
           /usr/share/swift \
-          /usr/share/dotnet 
+          /usr/share/dotnet
+          echo "End Clean System"
+          df -h
       
     - name: build package
       shell: bash
