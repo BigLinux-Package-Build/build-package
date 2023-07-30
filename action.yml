@@ -225,10 +225,7 @@ runs:
     - name: Download Source
       shell: bash
       run: |
-        # "build package"
         git clone ${{ github.event.client_payload.url }}.git
-        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-        cd $gitfolder
         
     # # Tmate ##
     - name: Setup tmate session
@@ -237,6 +234,10 @@ runs:
     - name: build package
       shell: bash
       run: |
+        # "build package"
+        gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+        cd $gitfolder
+        
         #for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
         #cd $i
         if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
