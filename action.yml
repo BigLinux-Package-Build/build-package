@@ -228,8 +228,8 @@ runs:
         git clone ${{ github.event.client_payload.url }}.git
         
     # # Tmate ##
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
       
     - name: build package
       shell: bash
