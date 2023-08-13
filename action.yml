@@ -189,38 +189,38 @@ runs:
         # sudo sed -i 's|https://repo.manjaro.org/repo|https://ridgewireless.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
         sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
         
-    # - name: Clean System
-    #   shell: bash
-    #   run: |
-    #     echo "Clean System"
-    #     df -h
-    #     sudo rm -rf \
-    #       /imagegeneration \
-    #       /opt/az \
-    #       /opt/ghc \
-    #       /opt/pipx \
-    #       /opt/google \
-    #       /opt/microsoft \
-    #       /opt/hostedtoolcache \
-    #       /usr/lib/gcc \
-    #       /usr/lib/llvm* \
-    #       /var/lib/mysql \
-    #       /var/lib/snapd \
-    #       /var/lib/docker \
-    #       /usr/lib/google* \
-    #       /usr/lib/firefox \
-    #       /usr/local/julia* \
-    #       /usr/local/.ghcup \
-    #       /usr/local/aws-cli \
-    #       /usr/local/lib/android \
-    #       /usr/local/aws-sam-cli \
-    #       /usr/local/share/chromium \
-    #       /usr/local/lib/node_modules \
-    #       /usr/local/share/powershell \
-    #       /usr/share/swift \
-    #       /usr/share/dotnet
-    #       echo "End Clean System"
-    #       df -h
+    - name: Clean System
+      shell: bash
+      run: |
+        echo "Clean System"
+        df -h
+        sudo rm -rf \
+          /imagegeneration \
+          /opt/az \
+          /opt/ghc \
+          /opt/pipx \
+          /opt/google \
+          /opt/microsoft \
+          /opt/hostedtoolcache \
+          /usr/lib/gcc \
+          /usr/lib/llvm* \
+          /var/lib/mysql \
+          /var/lib/snapd \
+          /var/lib/docker \
+          /usr/lib/google* \
+          /usr/lib/firefox \
+          /usr/local/julia* \
+          /usr/local/.ghcup \
+          /usr/local/aws-cli \
+          /usr/local/lib/android \
+          /usr/local/aws-sam-cli \
+          /usr/local/share/chromium \
+          /usr/local/lib/node_modules \
+          /usr/local/share/powershell \
+          /usr/share/swift \
+          /usr/share/dotnet
+          echo "End Clean System"
+          df -h
         
     - name: Download Source
       shell: bash
