@@ -103,11 +103,11 @@ runs:
         echo '
         [biglinux-testing]
         SigLevel = PackageRequired
-        Server = https://repo.biglinux.com.br/testing/$arch' | sudo tee -a /etc/pacman.conf
+        Server = https://devdevdev.biglinux.com.br/testing/$arch' | sudo tee -a /etc/pacman.conf
         echo '
         [biglinux-stable]
         SigLevel = PackageRequired
-        Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/pacman.conf
+        Server = https://devdevdev.biglinux.com.br/stable/$arch' | sudo tee -a /etc/pacman.conf
     
     - name: install keyrings
       shell: bash
@@ -172,11 +172,11 @@ runs:
         echo '
         [biglinux-testing]
         SigLevel = PackageRequired
-        Server = https://repo.biglinux.com.br/testing/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        Server = https://devdevdev.biglinux.com.br/testing/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         echo '
         [biglinux-stable]
         SigLevel = PackageRequired
-        Server = https://repo.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        Server = https://devdevdev.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         
         sudo sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/chrootbuild/pacman.conf.x86_64
         
