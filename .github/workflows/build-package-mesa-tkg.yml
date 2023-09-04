@@ -5,6 +5,7 @@ on:
   repository_dispatch:
     types:
       - TKG/mesa-tkg-git
+      - TKG/mesa-tkg-stable
   
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
