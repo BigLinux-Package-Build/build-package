@@ -1,34 +1,25 @@
 name: Build Mesa TKG
 
-# Controls when the workflow will run
 on:
   repository_dispatch:
     types:
       - TKG/mesa-tkg-git
       - TKG/mesa-tkg-stable
-  
-  # Allows you to run this workflow manually from the Actions tab
-  #workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+    build:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: echo PayLoads
         run: |
+          echo "type: ${{ github.event.client_payload.event_type }}"
           echo "url: ${{ github.event.client_payload.url }}"
           echo "branch: ${{ github.event.client_payload.branch }}"
           echo "extrarepo: ${{ github.event.client_payload.extrarepo }}"
+          
       - name: Makepkg Build and Check
         id: makepkg
-        # You may pin to the exact commit or the version.
         uses: BigLinux-Package-Build/build-package@main
         with:
           package: pkgbuild
@@ -37,10 +28,8 @@ jobs:
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
-          extracommand: sed -i "$(sed -n '/provides=/{=;q}' PKGBUILD)s/)/ vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;q}' PKGBUILD)s/)/ '"'vulkan-swrast'"')/" PKGBUILD ; sed -i "$(sed -n '/provides=/{=;2q}' PKGBUILD | tail -n1)s/)/ lib32-vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;2q}' PKGBUILD | tail -n1)s/)/ '"'lib32-vulkan-swrast'"')/" PKGBUILD
+          # extracommand: sed -i "$(sed -n '/provides=/{=;q}' PKGBUILD)s/)/ vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;q}' PKGBUILD)s/)/ '"'vulkan-swrast'"')/" PKGBUILD ; sed -i "$(sed -n '/provides=/{=;2q}' PKGBUILD | tail -n1)s/)/ lib32-vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;2q}' PKGBUILD | tail -n1)s/)/ '"'lib32-vulkan-swrast'"')/" PKGBUILD
                           
-                      
-          
       # # Tmate ##
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
@@ -53,9 +42,11 @@ jobs:
           ls -lh
           
           #Release#
-          # sed -i '/plain/d' PKGBUILD
-          # source PKGBUILD
-          release=mesa-tkg-git
+          if [ "${{ github.event.client_payload.event_type }}" = "TKG/mesa-tkg-stable" ];then
+            release=mesa-tkg-stable
+          else
+            release=mesa-tkg-git
+          fi
           
           if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then 
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
@@ -73,14 +64,6 @@ jobs:
             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
           done
           
-          #release=$(find . -name *.zst | cut -d "/" -f2)
-          # echo ${{ github.token }} | gh auth login --with-token
-          # gh release create ${release} --title ${release} --repo ${{ github.repository }} --notes "automated release from ${{ github.event.client_payload.url }}" || echo "release already exists"
-          #GITHUB_LINK=https://github.com/${GITHUB_REPOSITORY}/releases/download/${release}
-          # for i in .zst .sig .tar .md5; do
-          #   find -iname "*$i" -exec gh release upload ${release} --repo ${GITHUB_REPOSITORY} --clobber {} \;
-          # done
-       
       - name: Push to Repo
         shell: bash
         run: |
@@ -104,10 +87,10 @@ jobs:
           done
           exit 0
           
-      #- name: Telegram Alert End
-        #shell: bash
-        #run: |
-          #curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Pacote: ${{ github.event.action }} criado e enviado a partir do branch ${{ github.ref_name }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
+      # - name: Telegram Alert End
+      #   shell: bash
+      #   run: |
+      #     curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Pacote: ${{ github.event.action }} criado e enviado a partir do branch ${{ github.ref_name }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
           
       - name: Telegram Alert Fail
         # if: ${{ failure() || cancelled() }}
@@ -115,27 +98,3 @@ jobs:
         run: |
           curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
           
-        ## Tmate ##
-      #- name: Setup tmate session
-      #  uses: mxschmitt/action-tmate@v3 
-          
-        
-#      - name: upload-cdn77
-#        shell: bash -O extglob {0}
-#        run: |
-#          # if is not yet supported in composite https://github.com/actions/runner/blob/main/docs/adrs/0549-composite-run-steps.md#if-condition
-#          if [ -z "${{ inputs.cdn77-host }}" ] || [ -z "${{ inputs.cdn77-user }}" ] || [ -z "${{ inputs.cdn77-pwd }}" ]; then 
-#            echo "## not (all) credentials given for cdn77 upload"
-#            exit 0
-#          fi
-#          
-#          echo "## cdn77 upload"
-#          
-#          ssh-keyscan -t rsa ${{ inputs.cdn77-host }} >> /home/runner/.ssh/known_hosts
-#          ## create target dir
-#          sshpass -p "${{ inputs.cdn77-pwd }}" rsync -vaP --stats -e ssh ${{ inputs.edition }} \
-#            ${{ inputs.cdn77-user }}@${{ inputs.cdn77-host }}:/www/
-#          # upload
-#          sshpass -p "${{ inputs.cdn77-pwd }}" rsync -vaP \
-#            --stats -e ssh ${{ steps.upload-prepare.outputs.upload-files }} \
-#            ${{ inputs.cdn77-user }}@${{ inputs.cdn77-host }}:/www/${{ inputs.edition }}/${{ inputs.version }}/
