@@ -18,10 +18,6 @@ jobs:
           echo "branch: ${{ github.event.client_payload.branch }}"
           echo "extrarepo: ${{ github.event.client_payload.extrarepo }}"
           
-      # Tmate ##
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-          
       - name: Makepkg Build and Check
         id: makepkg
         uses: BigLinux-Package-Build/build-package@main
@@ -33,8 +29,11 @@ jobs:
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
           # extracommand: sed -i "$(sed -n '/provides=/{=;q}' PKGBUILD)s/)/ vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;q}' PKGBUILD)s/)/ '"'vulkan-swrast'"')/" PKGBUILD ; sed -i "$(sed -n '/provides=/{=;2q}' PKGBUILD | tail -n1)s/)/ lib32-vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;2q}' PKGBUILD | tail -n1)s/)/ '"'lib32-vulkan-swrast'"')/" PKGBUILD
-                          
-        
+          
+      # # Tmate ##
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+          
       - name: Publish Package on GitHub
         shell: bash
         run: |
