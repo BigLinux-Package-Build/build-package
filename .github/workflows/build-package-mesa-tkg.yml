@@ -68,28 +68,28 @@ jobs:
             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
           done
           
-      - name: Push to Repo
-        shell: bash
-        run: |
-          echo "## ssh setup"
-          mkdir -p /home/runner/.ssh
-          touch /home/runner/.ssh/github_actions
-          chmod 600 /home/runner/.ssh/github_actions
-          #ssh-agent -a /tmp/ssh_agent.sock > /dev/null
-          echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/github_actions
-          eval `ssh-agent -s`
-          ssh-add /home/runner/.ssh/github_actions
-          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
-          
-          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-          cd $gitfolder
-          ls -lh
-          if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
-          for i in *.zst *.sig *.md5; do
-          test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
-          sleep 10
-          done
-          exit 0
+#       - name: Push to Repo
+#         shell: bash
+#         run: |
+#           echo "## ssh setup"
+#           mkdir -p /home/runner/.ssh
+#           touch /home/runner/.ssh/github_actions
+#           chmod 600 /home/runner/.ssh/github_actions
+#           #ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+#           echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/github_actions
+#           eval `ssh-agent -s`
+#           ssh-add /home/runner/.ssh/github_actions
+#           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
+#           
+#           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+#           cd $gitfolder
+#           ls -lh
+#           if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
+#           for i in *.zst *.sig *.md5; do
+#           test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
+#           sleep 10
+#           done
+#           exit 0
           
       # - name: Telegram Alert End
       #   shell: bash
