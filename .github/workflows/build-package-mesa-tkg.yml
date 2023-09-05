@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: echo PayLoads
         run: |
-          echo "type: ${{ github.event.event_type }}"
+          echo "type: ${{ github.event.client_payload.type }}"
           echo "url: ${{ github.event.client_payload.url }}"
           echo "branch: ${{ github.event.client_payload.branch }}"
           echo "extrarepo: ${{ github.event.client_payload.extrarepo }}"
@@ -43,7 +43,7 @@ jobs:
           ls -lh
           
           #Release#
-          if [ "${{ github.event.client_payload.event_type }}" = "TKG/mesa-tkg-stable" ];then
+          if [ "${{ github.event.client_payload.type }}" = "stable" ];then
             release=mesa-tkg-stable
           else
             release=mesa-tkg-git
