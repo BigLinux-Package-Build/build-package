@@ -75,12 +75,14 @@ jobs:
           eval `ssh-agent -s`
           ssh-add /home/runner/.ssh/id_rsa
           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
+          ip=$(ssh ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }} -p ${{ secrets.PKGBUILD_PORT }} 'echo $(curl -s ident.me) | tail -n1')
+          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} $ip >> /home/runner/.ssh/known_hosts
           
           cd wine-tkg-git/wine-tkg-git
           ls -lh
           if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
           for i in *.zst *.sig *.md5; do
-          test -e $i && rsync -vapz -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }}:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
+          test -e $i && rsync -vapz -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@$ip:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
           sleep 10
           done
           exit 0
