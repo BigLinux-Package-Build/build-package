@@ -50,13 +50,9 @@ jobs:
           ssh-agent -a /tmp/ssh_agent.sock > /dev/null
           echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/id_rsa
           eval `ssh-agent -s`
-          echo "echo ssh add"
           ssh-add /home/runner/.ssh/id_rsa
-          echo "echo ssh keyscan"
           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
-          echo "echo ip"
           ip=$(ssh -o StrictHostKeyChecking=no ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }} -p ${{ secrets.PKGBUILD_PORT }} 'echo $(curl -s ident.me) | tail -n1')
-          echo "echo ip ssh keyscan"
           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} $ip >> /home/runner/.ssh/known_hosts
           
           ls -lh
