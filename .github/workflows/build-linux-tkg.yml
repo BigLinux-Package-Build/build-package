@@ -21,10 +21,6 @@ jobs:
           
           curl -s https://api.github.com/repos/Frogging-Family/linux-tkg/releases/latest | grep "x86_64.pkg.tar.zst" | cut -d : -f 2,3 | tr -d \" | grep "https" | wget -ci -
           
-      # # Tmate ##
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
-          
       - name: sign package
         shell: bash -O extglob {0}
         run: |
@@ -59,17 +55,21 @@ jobs:
           echo "echo ssh keyscan"
           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
           echo "echo ip"
-          ip=$(ssh ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }} -p ${{ secrets.PKGBUILD_PORT }} 'echo $(curl -s ident.me) | tail -n1')
-          echo "echo ip ssh keyscan"
-          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} $ip >> /home/runner/.ssh/known_hosts
+          # ip=$(ssh ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }} -p ${{ secrets.PKGBUILD_PORT }} 'echo $(curl -s ident.me) | tail -n1')
+          # echo "echo ip ssh keyscan"
+          # ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} $ip >> /home/runner/.ssh/known_hosts
           
-          ls -lh
-          if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
-          for i in *.zst *.sig *.md5; do
-          test -e $i && rsync -vapz -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@$ip:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
-          sleep 10
-          done
-          exit 0
+          # ls -lh
+          # if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then branch=stable; else branch=testing; fi
+          # for i in *.zst *.sig *.md5; do
+          # test -e $i && rsync -vapz -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@$ip:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
+          # sleep 10
+          # done
+          # exit 0
+          
+      # Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
           
       - name: Telegram Alert Fail
         # if: ${{ failure() || cancelled() }}
