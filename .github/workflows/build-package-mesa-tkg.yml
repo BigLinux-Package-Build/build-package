@@ -5,6 +5,14 @@ on:
     types:
       - TKG/mesa-tkg-git
       - TKG/mesa-tkg-stable
+      
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'With TMATE'
+        required: false
+        default: false
 
 jobs:
   build:
@@ -28,6 +36,7 @@ jobs:
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
+          tmate: ${{ inputs.debug_enabled }}
           # extracommand: sed -i "$(sed -n '/provides=/{=;q}' PKGBUILD)s/)/ vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;q}' PKGBUILD)s/)/ '"'vulkan-swrast'"')/" PKGBUILD ; sed -i "$(sed -n '/provides=/{=;2q}' PKGBUILD | tail -n1)s/)/ lib32-vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;2q}' PKGBUILD | tail -n1)s/)/ '"'lib32-vulkan-swrast'"')/" PKGBUILD
           
       # # Tmate ##

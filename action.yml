@@ -43,6 +43,9 @@ inputs:
   extrapackage:
     description: 'extra package to build'
     required: false
+  tmate:
+    description: 'run tmate'
+    required: false
     
 runs:
   using: "composite"
@@ -222,14 +225,16 @@ runs:
           echo "End Clean System"
           df -h
         
+    - name: Setup TMATE Session
+      uses: mxschmitt/action-tmate@v3
+      if: "${{ inputs.tmate == 'true' }}"
+      
     - name: Download Source
+      if: "${{ inputs.tmate == '' }}"
       shell: bash
       run: |
         git clone ${{ github.event.client_payload.url }}.git
         
-    # # Tmate ##
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
       
     - name: build package
       shell: bash

@@ -7,6 +7,13 @@ on:
       - biglinux/*
       - AUR/*
       - xivastudio/*
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'With TMATE'
+        required: false
+        default: false
   
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
@@ -55,6 +62,7 @@ jobs:
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
           extrapackage: ${{ github.event.client_payload.extrapackage }}
+          tmate: ${{ inputs.debug_enabled }}
           
       # # Tmate ##
       # - name: Setup tmate session
