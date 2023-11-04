@@ -127,6 +127,8 @@ jobs:
           ls -lh
           if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then
             branch=stable
+          elif [ -n "$(echo ${{ github.event.client_payload.branch }} | grep testing )" ];then
+            branch=testing
           elif [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/xivastudio/)" ]; then
             #cancel push to repo
             curl -s -H "Authorization: token ${{ github.token }}" \
