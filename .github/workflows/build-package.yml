@@ -79,11 +79,11 @@ jobs:
           source PKGBUILD
           release=${pkgname}-${pkgver}-${pkgrel}
           
-          if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then 
+          if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" -a -n "$(echo ${{ github.event.client_payload.branch }} | grep stable ]; then 
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
             # token=${{ secrets.TOKEN_RELEASE }}
             repo=$(echo ${{ github.event.client_payload.url }} | sed 's|https://github.com/||')
-          elif [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/xivastudio/)" ]; then 
+          elif [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/xivastudio/)" -a -n "$(echo ${{ github.event.client_payload.branch }} | grep stable ]; then 
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
             # token=${{ secrets.TOKEN_RELEASE }}
             repo=$(echo ${{ github.event.client_payload.url }} | sed 's|https://github.com/||')
