@@ -14,27 +14,13 @@ on:
         description: 'With TMATE'
         required: false
         default: false
-  
-  # Allows you to run this workflow manually from the Actions tab
-  #workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
-#       - name: Telegram Alert Start
-#         shell: bash
-#         run: |
-#           curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Criando ${{ github.event.action }} do repositório ${{ github.event.client_payload.branch }} enviado por ${{ github.actor }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
-      
+
       - name: echo PayLoads
         run: |
           echo "url: ${{ github.event.client_payload.url }}"
@@ -70,6 +56,9 @@ jobs:
         
       - name: Publish Package on GitHub
         shell: bash -O extglob {0}
+        env:
+          URL: ${{ github.event.client_payload.url }}
+          BRANCH: ${{ github.event.client_payload.branch }}
         run: |
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
@@ -79,36 +68,29 @@ jobs:
           source PKGBUILD
           release=${pkgname}-${pkgver}-${pkgrel}
           
-          if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" -a -n "$(echo ${{ github.event.client_payload.branch }} | grep stable ]; then 
+          if [ -n "$(grep https://github.com/biglinux/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
-            # token=${{ secrets.TOKEN_RELEASE }}
-            repo=$(echo ${{ github.event.client_payload.url }} | sed 's|https://github.com/||')
-          elif [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/xivastudio/)" -a -n "$(echo ${{ github.event.client_payload.branch }} | grep stable ]; then 
+            repo=$(sed 's|https://github.com/||' <<< $URL)
+          elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
-            # token=${{ secrets.TOKEN_RELEASE }}
-            repo=$(echo ${{ github.event.client_payload.url }} | sed 's|https://github.com/||')
+            repo=$(sed 's|https://github.com/||' <<< $URL)
           else
             echo ${{ github.token }} | gh auth login --with-token
             # token=${{ github.token }}
             repo=${{ github.repository }}
           fi
           
-          gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from ${{ github.event.client_payload.url }}" || echo "release already exists"
+          gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $URL" || echo "release already exists"
           GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
           for i in .zst .sig .tar .md5; do
             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
           done
-          
-          #release=$(find . -name *.zst | cut -d "/" -f2)
-          # echo ${{ github.token }} | gh auth login --with-token
-          # gh release create ${release} --title ${release} --repo ${{ github.repository }} --notes "automated release from ${{ github.event.client_payload.url }}" || echo "release already exists"
-          #GITHUB_LINK=https://github.com/${GITHUB_REPOSITORY}/releases/download/${release}
-          # for i in .zst .sig .tar .md5; do
-          #   find -iname "*$i" -exec gh release upload ${release} --repo ${GITHUB_REPOSITORY} --clobber {} \;
-          # done
        
       - name: Push to Repo
         shell: bash
+        env:
+          URL: ${{ github.event.client_payload.url }}
+          BRANCH: ${{ github.event.client_payload.branch }}
         run: |
           echo "## ssh setup"
           mkdir -p /home/runner/.ssh
@@ -125,16 +107,16 @@ jobs:
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           ls -lh
-          if [ -n "$(echo ${{ github.event.client_payload.branch }} | grep stable )" ];then
+          if [ -n "$(grep stable <<< $BRANCH)" ];then
             branch=stable
-          elif [ -n "$(echo ${{ github.event.client_payload.branch }} | grep testing )" ];then
+          elif [ -n "$(grep testing <<< $BRANCH)" ];then
             branch=testing
-          elif [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/xivastudio/)" ]; then
+          elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" ]; then
             #cancel push to repo
             curl -s -H "Authorization: token ${{ github.token }}" \
             -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
             sleep infinity
-          else 
+          else
             branch=testing
           fi
           for i in *.zst *.sig *.md5; do
