@@ -157,9 +157,11 @@ runs:
       shell: bash
       env:
         EXTRAREPO: ${{ inputs.extrarepo }}
+        COMMIT: b3efa6f6929bfc7fc62328b64ab4ebc0800111ce
       run: |
-        sudo git clone --depth 1 https://gitlab.manjaro.org/tools/development-tools/manjaro-chrootbuild
+        sudo git clone https://gitlab.manjaro.org/tools/development-tools/manjaro-chrootbuild
         pushd manjaro-chrootbuild
+        sudo git checkout $COMMIT
         sudo ./install.sh
         echo 'PACKAGER="BigLinux Package Build <bigbruno@gmail.com>"' | sudo tee -a /etc/makepkg.conf > /dev/null
         popd

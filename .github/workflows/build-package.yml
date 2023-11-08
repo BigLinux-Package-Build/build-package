@@ -85,7 +85,7 @@ jobs:
           for i in .zst .sig .tar .md5; do
             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
           done
-       
+          
       - name: Push to Repo
         shell: bash
         env:
