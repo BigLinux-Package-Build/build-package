@@ -111,7 +111,7 @@ runs:
         sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
         sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
         echo "
-        ${{ inputs.repo-dev }}" | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        ${{ inputs.repo-dev }}" | sudo tee -a /etc/pacman.conf
         echo "
         [biglinux-testing]
         SigLevel = PackageRequired
