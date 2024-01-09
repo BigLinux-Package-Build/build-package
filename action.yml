@@ -110,16 +110,18 @@ runs:
         sudo sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf
         sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
         sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
-        echo "
-        ${{ inputs.repo-dev }}" | sudo tee -a /etc/pacman.conf
-        echo "
+        echo '
+        ['"${{ inputs.repo-dev }}"']
+        SigLevel = PackageRequired
+        Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/'"${{ inputs.repo-dev }}"'/$arch' | sudo tee -a /etc/pacman.conf
+        echo '
         [biglinux-testing]
         SigLevel = PackageRequired
-        Server = https://${{ inputs.repo-mirror }}.biglinux.com.br/testing/$arch" | sudo tee -a /etc/pacman.conf
-        echo "
+        Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/testing/$arch' | sudo tee -a /etc/pacman.conf
+        echo '
         [biglinux-stable]
         SigLevel = PackageRequired
-        Server = https://${{ inputs.repo-mirror }}.biglinux.com.br/stable/$arch" | sudo tee -a /etc/pacman.conf
+        Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/stable/$arch' | sudo tee -a /etc/pacman.conf
     
     - name: install keyrings
       shell: bash
