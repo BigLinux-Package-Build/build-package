@@ -281,7 +281,7 @@ runs:
         
         echo "branch_build=${{ inputs.branch }}"
         
-        build_opt=("-H" "-p ." "-b ${{ inputs.branch }}" "-i" "python-setuptools" )
+        build_opt=("-H" "-p ." "-b ${{ inputs.branch }}" ) #"-i" "python-setuptools" )
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
         #[[ -n "${{ inputs.extrapackage }}" ]] && build_opt+=("-i ${{ inputs.extrapackage }}")
