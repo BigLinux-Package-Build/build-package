@@ -51,11 +51,13 @@ jobs:
           ls -lh
           
           #Release#
-          if [ "${{ github.event.client_payload.type }}" = "stable" ];then
-            release=mesa-tkg-stable
-          else
-            release=mesa-tkg-git
-          fi
+          source PKGBUILD
+          release=${pkgname}-${pkgver}-${pkgrel}
+          # if [ "${{ github.event.client_payload.type }}" = "stable" ];then
+          #   release=mesa-tkg-stable
+          # else
+          #   release=mesa-tkg-git
+          # fi
           
           if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token

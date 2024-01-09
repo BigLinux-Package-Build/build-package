@@ -46,6 +46,13 @@ inputs:
   tmate:
     description: 'run tmate'
     required: false
+  repo-mirror:
+    description: 'mirror to use in build'
+    default: repo
+    required: false
+  repo-dev:
+    description: 'developmente repository'
+    required: false
     
 runs:
   using: "composite"
@@ -103,14 +110,16 @@ runs:
         sudo sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf
         sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
         sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
-        echo '
+        echo "
+        ${{ inputs.repo-dev }}" | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        echo "
         [biglinux-testing]
         SigLevel = PackageRequired
-        Server = https://devdevdev.biglinux.com.br/testing/$arch' | sudo tee -a /etc/pacman.conf
-        echo '
+        Server = https://${{ inputs.repo-mirror }}.biglinux.com.br/testing/$arch" | sudo tee -a /etc/pacman.conf
+        echo "
         [biglinux-stable]
         SigLevel = PackageRequired
-        Server = https://devdevdev.biglinux.com.br/stable/$arch' | sudo tee -a /etc/pacman.conf
+        Server = https://${{ inputs.repo-mirror }}.biglinux.com.br/stable/$arch" | sudo tee -a /etc/pacman.conf
     
     - name: install keyrings
       shell: bash
@@ -174,14 +183,16 @@ runs:
         sudo sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
         sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
         sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
-        echo '
+        echo "
+        ${{ inputs.repo-dev }}" | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        echo "
         [biglinux-testing]
         SigLevel = PackageRequired
-        Server = https://devdevdev.biglinux.com.br/testing/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
-        echo '
+        Server = https://${{ inputs.repo-mirror }}.biglinux.com.br/testing/$arch" | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        echo "
         [biglinux-stable]
         SigLevel = PackageRequired
-        Server = https://devdevdev.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        Server = https://${{ inputs.repo-mirror }}.biglinux.com.br/stable/$arch" | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         
         sudo sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/chrootbuild/pacman.conf.x86_64
         
@@ -257,7 +268,10 @@ runs:
         
         echo "branch_build=${{ inputs.branch }}"
         
-        build_opt=("-H" "-p ." "-b ${{ inputs.branch }}")
+        #download python-setuptools
+        sudo pacman -Syw --noconfirm python-setuptools --cachedir /var/lib/chrootbuild/local_pkgs/
+        
+        build_opt=("-H" "-p ." "-b ${{ inputs.branch }}" "-i" "python-setuptools" )
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
         #[[ -n "${{ inputs.extrapackage }}" ]] && build_opt+=("-i ${{ inputs.extrapackage }}")

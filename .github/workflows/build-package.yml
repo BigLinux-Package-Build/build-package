@@ -7,6 +7,7 @@ on:
       - biglinux/*
       - AUR/*
       - xivastudio/*
+
   workflow_dispatch:
     inputs:
       debug_enabled:
@@ -49,6 +50,8 @@ jobs:
           extrarepo: ${{ github.event.client_payload.extrarepo }}
           extrapackage: ${{ github.event.client_payload.extrapackage }}
           tmate: ${{ inputs.debug_enabled }}
+          repo-mirror: ${{ secrets.REPO_MIRROR }}
+          repo-dev: ${{ secrets.REPO_DEV }}
           
       # # Tmate ##
       # - name: Setup tmate session
@@ -68,15 +71,27 @@ jobs:
           source PKGBUILD
           release=${pkgname}-${pkgver}-${pkgrel}
           
-          if [ -n "$(grep https://github.com/biglinux/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
+          # if [ -n "$(grep https://github.com/biglinux/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
+          #   echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
+          #   repo=$(sed 's|https://github.com/||' <<< $URL)
+          # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
+          #   echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
+          #   repo=$(sed 's|https://github.com/||' <<< $URL)
+          # else
+          #   echo ${{ github.token }} | gh auth login --with-token
+          #   # token=${{ github.token }}
+          #   repo=${{ github.repository }}
+          # fi
+          
+          # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
+          if [ -n "$(grep stable <<< $BRANCH)" ];then
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
             repo=$(sed 's|https://github.com/||' <<< $URL)
-          elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
-            echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
-            repo=$(sed 's|https://github.com/||' <<< $URL)
+          elif [ -n "$(grep testing <<< $BRANCH)" ];then
+            echo ${{ github.token }} | gh auth login --with-token
+            repo=${{ github.repository }}
           else
             echo ${{ github.token }} | gh auth login --with-token
-            # token=${{ github.token }}
             repo=${{ github.repository }}
           fi
           
@@ -111,24 +126,19 @@ jobs:
             branch=stable
           elif [ -n "$(grep testing <<< $BRANCH)" ];then
             branch=testing
-          elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" ]; then
-            #cancel push to repo
-            curl -s -H "Authorization: token ${{ github.token }}" \
-            -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
-            sleep infinity
+          # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" ]; then
+          #   #cancel push to repo
+          #   curl -s -H "Authorization: token ${{ github.token }}" \
+          #   -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
+          #   sleep infinity
           else
-            branch=testing
+            branch=development
           fi
           for i in *.zst *.sig *.md5; do
           test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@$ip:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
           sleep 10
           done
           exit 0
-          
-      #- name: Telegram Alert End
-        #shell: bash
-        #run: |
-          #curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "Pacote: ${{ github.event.action }} criado e enviado a partir do branch ${{ github.ref_name }}", "disable_notification": true}' ${{ secrets.MESSAGE_BOT_KEY }}
           
       - name: Telegram Alert Fail
         # if: ${{ failure() || cancelled() }}
