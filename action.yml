@@ -111,7 +111,7 @@ runs:
         sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
         sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
         echo '
-        ['"${{ inputs.repo-dev }}"']
+        [biglinux-'"${{ inputs.repo-dev }}"']
         SigLevel = PackageRequired
         Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/'"${{ inputs.repo-dev }}"'/$arch' | sudo tee -a /etc/pacman.conf
         echo '
@@ -185,16 +185,18 @@ runs:
         sudo sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
         sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
         sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
-        echo "
-        ${{ inputs.repo-dev }}" | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
-        echo "
+        echo '
+        [biglinux-'"${{ inputs.repo-dev }}"']
+        SigLevel = PackageRequired
+        Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/'"${{ inputs.repo-dev }}"'/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        echo '
         [biglinux-testing]
         SigLevel = PackageRequired
-        Server = https://${{ inputs.repo-mirror }}.biglinux.com.br/testing/$arch" | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
-        echo "
+        Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/testing/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        echo '
         [biglinux-stable]
         SigLevel = PackageRequired
-        Server = https://${{ inputs.repo-mirror }}.biglinux.com.br/stable/$arch" | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+        Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/stable/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         
         sudo sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/chrootbuild/pacman.conf.x86_64
         
@@ -206,6 +208,10 @@ runs:
         # sudo sed -i 's|https://repo.manjaro.org/repo|https://forksystems.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
         # sudo sed -i 's|https://repo.manjaro.org/repo|https://ridgewireless.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
         sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
+        
+    - name: Setup TMATE Session
+      uses: mxschmitt/action-tmate@v3
+      if: "${{ inputs.tmate == 'true' }}"
         
     - name: Clean System
       shell: bash
@@ -239,10 +245,6 @@ runs:
           /usr/share/dotnet
           echo "End Clean System"
           df -h
-        
-    - name: Setup TMATE Session
-      uses: mxschmitt/action-tmate@v3
-      if: "${{ inputs.tmate == 'true' }}"
       
     - name: Download Source
       if: "${{ inputs.tmate == '' }}"
