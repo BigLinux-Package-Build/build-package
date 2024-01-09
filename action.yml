@@ -281,9 +281,6 @@ runs:
         
         echo "branch_build=${{ inputs.branch }}"
         
-        #download python-setuptools
-        sudo pacman -Syw --noconfirm python-setuptools --cachedir /var/lib/chrootbuild/local_pkgs/
-        
         build_opt=("-H" "-p ." "-b ${{ inputs.branch }}" "-i" "python-setuptools" )
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
