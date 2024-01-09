@@ -263,6 +263,7 @@ runs:
         # "build package"
         #download python-setuptools
         sudo pacman -Syw --noconfirm python-setuptools --cachedir ./local_pkgs/
+        mkdir -p /var/lib/chrootbuild/local_pkgs/
         sudo cp -a local_pkgs/* /var/lib/chrootbuild/local_pkgs/
         
         gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
