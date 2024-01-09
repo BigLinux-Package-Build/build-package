@@ -209,9 +209,9 @@ runs:
         # sudo sed -i 's|https://repo.manjaro.org/repo|https://ridgewireless.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
         sudo sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
         
-    - name: Setup TMATE Session
-      uses: mxschmitt/action-tmate@v3
-      if: "${{ inputs.tmate == 'true' }}"
+    # - name: Setup TMATE Session
+    #   uses: mxschmitt/action-tmate@v3
+    #   if: "${{ inputs.tmate == 'true' }}"
         
     - name: Clean System
       shell: bash
@@ -246,15 +246,19 @@ runs:
           echo "End Clean System"
           df -h
       
+    - name: Setup TMATE Session
+      uses: mxschmitt/action-tmate@v3
+      if: "${{ inputs.tmate == 'true' }}"
+      
     - name: Download Source
       if: "${{ inputs.tmate == '' }}"
       shell: bash
       run: |
         git clone ${{ github.event.client_payload.url }}.git
-        
       
     - name: build package
       shell: bash
+      if: "${{ inputs.tmate == '' }}"
       run: |
         # "build package"
         gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
