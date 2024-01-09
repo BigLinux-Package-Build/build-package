@@ -132,8 +132,8 @@ jobs:
           #   -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
           #   sleep infinity
           else
-#             branch=quebra-systema
-              branch=testing
+            # branch=quebra-systema
+            branch=testing
           fi
           for i in *.zst *.sig *.md5; do
           test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@$ip:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
