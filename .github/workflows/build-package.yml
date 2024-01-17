@@ -122,7 +122,11 @@ jobs:
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           ls -lh
-          if [ -n "$(grep stable <<< $BRANCH)" ];then
+          if [ -n "$(grep update-stable <<< $BRANCH)" ]; then
+            branch=update-stable
+          elif [ -n "$(grep update-testing <<< $BRANCH)" ]; then
+            branch=update-testing
+          elif [ -n "$(grep stable <<< $BRANCH)" ];then
             branch=stable
           elif [ -n "$(grep testing <<< $BRANCH)" ];then
             branch=testing
@@ -131,10 +135,6 @@ jobs:
           #   curl -s -H "Authorization: token ${{ github.token }}" \
           #   -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
           #   sleep infinity
-          elif [ -n "$(grep update-stable <<< $BRANCH)" ]; then
-            branch=update-stable
-          elif [ -n "$(grep update-testing <<< $BRANCH)" ]; then
-            branch=update-testing
           else
             # branch=quebra-systema
             branch=testing
