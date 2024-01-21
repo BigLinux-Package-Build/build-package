@@ -37,6 +37,8 @@ jobs:
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
           tmate: ${{ inputs.debug_enabled }}
+          repo-mirror: ${{ secrets.REPO_MIRROR }}
+          repo-dev: ${{ secrets.REPO_DEV }}
           # extracommand: sed -i "$(sed -n '/provides=/{=;q}' PKGBUILD)s/)/ vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;q}' PKGBUILD)s/)/ '"'vulkan-swrast'"')/" PKGBUILD ; sed -i "$(sed -n '/provides=/{=;2q}' PKGBUILD | tail -n1)s/)/ lib32-vulkan-swrast)/" PKGBUILD ; sed -i "$(sed -n '/conflicts=/{=;2q}' PKGBUILD | tail -n1)s/)/ '"'lib32-vulkan-swrast'"')/" PKGBUILD
           
       # # Tmate ##
