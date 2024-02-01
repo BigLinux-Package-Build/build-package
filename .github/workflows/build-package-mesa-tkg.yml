@@ -53,8 +53,8 @@ jobs:
           ls -lh
           
           #Release#
-          source PKGBUILD
-          #release=${pkgname}-${pkgver}-${pkgrel}
+          # source PKGBUILD
+          # release=${pkgname}-${pkgver}-${pkgrel}
           release=$(grep pkgname= PKGBUILD | cut -d "'" -f2)-$(cat src/mesa/VERSION)-$(grep pkgrel= PKGBUILD | cut -d "=" -f2)
           # if [ "${{ github.event.client_payload.type }}" = "stable" ];then
           #   release=mesa-tkg-stable
