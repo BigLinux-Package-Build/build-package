@@ -214,6 +214,7 @@ runs:
     #   if: "${{ inputs.tmate == 'true' }}"
         
     - name: Clean System
+      if: "${{ inputs.tmate == '' }}"
       shell: bash
       run: |
         echo "Clean System"
