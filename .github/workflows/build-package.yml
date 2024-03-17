@@ -127,12 +127,12 @@ jobs:
             branch=update-stable
           elif [ -n "$(grep update-testing <<< $BRANCH)" ]; then
             branch=update-testing
-          elif [ -n "$(grep stable <<< $BRANCH)" ];then
-            branch=stable
-          elif [ -n "$(grep testing <<< $BRANCH)" ];then
-            branch=testing
           elif [ -n "$(grep unstable <<< $BRANCH)" -o -n "$(grep development <<< $BRANCH)" ];then
             branch=${{ secrets.REPO_UNSTABLE }}
+          elif [ -n "$(grep testing <<< $BRANCH)" ];then
+            branch=testing
+          elif [ -n "$(grep stable <<< $BRANCH)" ];then
+            branch=stable
           # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" ]; then
           #   #cancel push to repo
           #   curl -s -H "Authorization: token ${{ github.token }}" \
