@@ -88,9 +88,9 @@ jobs:
           if [ -n "$(grep stable <<< $BRANCH)" ];then
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
             repo=$(sed 's|https://github.com/||' <<< $URL)
-          elif [ -n "$(grep testing <<< $BRANCH)" ];then
-            echo ${{ github.token }} | gh auth login --with-token
-            repo=${{ github.repository }}
+          # elif [ -n "$(grep testing <<< $BRANCH)" ];then
+          #   echo ${{ github.token }} | gh auth login --with-token
+          #   repo=${{ github.repository }}
           else
             echo ${{ github.token }} | gh auth login --with-token
             repo=${{ github.repository }}
@@ -131,13 +131,15 @@ jobs:
             branch=stable
           elif [ -n "$(grep testing <<< $BRANCH)" ];then
             branch=testing
+          elif [ -n "$(grep unstable <<< $BRANCH)" -o -n "$(grep development <<< $BRANCH)" ];then
+            branch={{ secrets.REPO_UNSTABLE }}
           # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" ]; then
           #   #cancel push to repo
           #   curl -s -H "Authorization: token ${{ github.token }}" \
           #   -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
           #   sleep infinity
           else
-            # branch=quebra-systema
+            # branch={{ secrets.REPO_UNSTABLE }}
             branch=testing
           fi
           for i in *.zst *.sig *.md5; do
