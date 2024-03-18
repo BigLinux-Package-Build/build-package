@@ -25,16 +25,16 @@ jobs:
 
       - name: echo PayLoads
         run: |
+          echo PayLoads
+          if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
+            echo "manjaro_branch=stable" >> $GITHUB_ENV
+          else
+            echo "manjaro_branch=${{ github.event.client_payload.manjaro_branch }}" >> $GITHUB_ENV
+          fi
           echo "url: ${{ github.event.client_payload.url }}"
           echo "git_branch: ${{ github.event.client_payload.branch }}"
           echo "manjaro_branch: ${{ github.event.client_payload.manjaro_branch }}"
           echo "extrarepo: ${{ github.event.client_payload.extrarepo }}"
-          
-          # if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
-          #   echo "manjaro_branch=stable" >> $GITHUB_ENV
-          # else
-          #   echo "manjaro_branch=${{ github.event.client_payload.manjaro_branch }}" >> $GITHUB_ENV
-          # fi
           
           # echo "new manjaro_branch: ${{ env.manjaro_branch }}"
           
@@ -44,7 +44,7 @@ jobs:
         uses: BigLinux-Package-Build/build-package@main
         with:
           # package: pkgbuild
-          manjaro_branch: ${{ github.event.client_payload.manjaro_branch }}
+          manjaro_branch: ${{ env.manjaro_branch }}
           git_branch: ${{ github.event.client_payload.branch }}
           gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.PASSPHRASE }}
@@ -124,7 +124,7 @@ jobs:
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           ls -lh
-          if [ -n "$(grep testing <<< $MANJARO_BRANCH)" ]; then
+          if [ -n "$(grep testing <<< $MANJARO_BRANCH)" -o -n "$(grep manjaro-testing <<< $BRANCH)" ]; then
             branch=manjaro-testing
           elif [ -n "$(grep update-stable <<< $BRANCH)" ]; then
             branch=update-stable
