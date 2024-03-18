@@ -27,8 +27,8 @@ jobs:
         run: |
           echo "url: ${{ github.event.client_payload.url }}"
           echo "git_branch: ${{ github.event.client_payload.branch }}"
-          echo "extrarepo: ${{ github.event.client_payload.extrarepo }}"
           echo "manjaro_branch: ${{ github.event.client_payload.manjaro_branch }}"
+          echo "extrarepo: ${{ github.event.client_payload.extrarepo }}"
           
           # if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
           #   echo "manjaro_branch=stable" >> $GITHUB_ENV
@@ -46,8 +46,8 @@ jobs:
           # package: pkgbuild
           manjaro_branch: ${{ github.event.client_payload.manjaro_branch }}
           git_branch: ${{ github.event.client_payload.branch }}
-          # gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          # gpg-passphrase: ${{ secrets.PASSPHRASE }}
+          gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.PASSPHRASE }}
           extrarepo: ${{ github.event.client_payload.extrarepo }}
           extrapackage: ${{ github.event.client_payload.extrapackage }}
           tmate: ${{ inputs.debug_enabled }}

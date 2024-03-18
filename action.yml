@@ -22,12 +22,12 @@ inputs:
   repo:
     description: 'package repo'
     required: true
-  # gpg-key:
-  #   descriptio: 'gpg signing key'
-  #   required: true
-  # gpg-passphrase:
-  #   description: 'gpg passphrase'
-  #   required: true
+  gpg-key:
+    descriptio: 'gpg signing key'
+    required: true
+  gpg-passphrase:
+    description: 'gpg passphrase'
+    required: true
   # ssh-key:
   #   description: 'boxit user ssh private key'
   #   required: false
