@@ -2,14 +2,14 @@ name: 'BigLinux Package Action'
 description: 'Builds Manjaro Packages'
 
 inputs:
-  package:
-    description: 'PKGBUILD repo name'
-    required: true
+  # package:
+  #   description: 'PKGBUILD repo name'
+  #   required: true
   source:
     description: 'custom package repo source'
     required: false
-  branch:
-    description: 'branch to build against'
+  manjaro_branch:
+    description: 'Manjaro branch to build'
     default: stable
     required: false
   custom-repo:
@@ -22,19 +22,19 @@ inputs:
   repo:
     description: 'package repo'
     required: true
-  gpg-key:
-    descriptio: 'gpg signing key'
-    required: true
-  gpg-passphrase:
-    description: 'gpg passphrase'
-    required: true
-  ssh-key:
-    description: 'boxit user ssh private key'
-    required: false
+  # gpg-key:
+  #   descriptio: 'gpg signing key'
+  #   required: true
+  # gpg-passphrase:
+  #   description: 'gpg passphrase'
+  #   required: true
+  # ssh-key:
+  #   description: 'boxit user ssh private key'
+  #   required: false
   extrarepo:
     description: 'extra repository to build package'
     required: false
-  gitbranch:
+  git_branch:
     description: 'extra repository to build package'
     required: false
   extracommand:
@@ -273,16 +273,16 @@ runs:
         #for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
         #cd $i
         if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
-        git checkout ${{ inputs.gitbranch }}
-        sed -i '/source=/s/\.git"/\.git#branch=${{ inputs.gitbranch }}"/' PKGBUILD
+        git checkout ${{ inputs.git_branch }}
+        sed -i '/source=/s/\.git"/\.git#branch=${{ inputs.git_branch }}"/' PKGBUILD
         fi
         
         ${{ github.event.client_payload.command }}
         ${{ inputs.extracommand }}
         
-        echo "branch_build=${{ inputs.branch }}"
+        echo "branch_build=${{ inputs.manjaro_branch }}"
         
-        build_opt=("-H" "-p ." "-b ${{ inputs.branch }}" ) #"-i" "python-setuptools" )
+        build_opt=("-H" "-p ." "-b ${{ inputs.manjaro_branch }}" ) #"-i" "python-setuptools" )
         [[ ! -z "${{ inputs.custom-repo }}" ]] && build_opt+=("-k ${{ inputs.custom-repo }}")
         [[ "${{ inputs.multilib }}" == "true" ]] && build_opt+=("-m")
         #[[ -n "${{ inputs.extrapackage }}" ]] && build_opt+=("-i ${{ inputs.extrapackage }}")
@@ -294,7 +294,7 @@ runs:
         
     - name: Rename Package
       shell: bash -O extglob {0}
-      run: | 
+      run: |
         # "Rename Package"
         #for i in $(find -type f -name PKGBUILD | sed 's/PKGBUILD//'); do
         #cd $i
