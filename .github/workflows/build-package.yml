@@ -126,6 +126,11 @@ jobs:
           ls -lh
           if [ -n "$(grep testing <<< $MANJARO_BRANCH)" -o -n "$(grep manjaro-testing <<< $BRANCH)" ]; then
             branch=manjaro-testing
+          elif [ -n "$MANJARO_BRANCH" ]; then
+            #cancel push to repo
+            curl -s -H "Authorization: token ${{ github.token }}" \
+            -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
+            sleep infinity
           elif [ -n "$(grep update-stable <<< $BRANCH)" ]; then
             branch=update-stable
           elif [ -n "$(grep update-testing <<< $BRANCH)" ]; then
