@@ -59,7 +59,7 @@ jobs:
       #   uses: mxschmitt/action-tmate@v3
         
       - name: Publish Package on GitHub
-        shell: bash -O extglob {0}
+        shell: bash
         env:
           URL: ${{ github.event.client_payload.url }}
           BRANCH: ${{ github.event.client_payload.branch }}
