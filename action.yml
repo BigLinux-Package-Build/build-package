@@ -102,7 +102,7 @@ runs:
         sudo mkdir -p /etc/pacman.d
         sudo touch /etc/pacman.d/mirrorlist
         # sudo wget https://raw.githubusercontent.com/BigLinux-Package-Build/manjaro-mirror/main/mirrorlist -O /etc/pacman.d/mirrorlist
-        echo 'Server = https://mirrors2.manjaro.org/stable/$repo/$arch' > /etc/pacman.d/mirrorlist
+        echo 'Server = https://mirrors2.manjaro.org/stable/$repo/$arch' | sudo tee /etc/pacman.d/mirrorlist
         popd
         sudo rm -rf pacman
         
