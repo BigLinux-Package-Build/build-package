@@ -201,8 +201,8 @@ runs:
         
         sudo sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/chrootbuild/pacman.conf.x86_64
         
-        mirror=$(cat /etc/pacman.d/mirrorlist | head -n1 | awk '{print $3}' | sed -ne 's/\(manjaro\).*/\1/p')
-        sudo sed -i "s|https://repo.manjaro.org/repo|${mirror}|" /usr/lib/manjaro-chrootbuild/util.sh
+        # mirror=$(cat /etc/pacman.d/mirrorlist | head -n1 | awk '{print $3}' | sed -ne 's/\(manjaro\).*/\1/p')
+        # sudo sed -i "s|https://repo.manjaro.org/repo|${mirror}|" /usr/lib/manjaro-chrootbuild/util.sh
         
         # sudo sed -i 's|https://repo.manjaro.org/repo|https://mnvoip.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
         #sudo sed -i 's|https://repo.manjaro.org/repo|https://mirror2.sandyriver.net/pub/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
