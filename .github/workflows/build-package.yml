@@ -85,7 +85,7 @@ jobs:
           # fi
           
           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
-          if [ -n "$(grep stable <<< $BRANCH)" ];then
+          if [ -n "$(grep stable <<< $BRANCH)" -o -n "$(grep xanmod <<< $URL)" ];then
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
             repo=$(sed 's|https://github.com/||' <<< $URL)
           # elif [ -n "$(grep testing <<< $BRANCH)" ];then
