@@ -133,7 +133,7 @@ jobs:
             curl -s -H "Authorization: token ${{ github.token }}" \
             -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
             sleep infinity
-          elif [ -n $(grep xanmod <<< $URL) ]; then
+          elif [ -n "$(grep xanmod <<< $URL)" ]; then
             branch=testing
             echo "3"
           elif [ -n "$(grep update-stable <<< $BRANCH)" ]; then
