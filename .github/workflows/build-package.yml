@@ -69,6 +69,7 @@ jobs:
           ls -lh
           
           #Release#
+          echo "Release"
           source PKGBUILD
           release=${pkgname}-${pkgver}-${pkgrel}
           
@@ -84,6 +85,7 @@ jobs:
           #   repo=${{ github.repository }}
           # fi
           
+          echo "If repos"
           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
           if [ -n "$(grep stable <<< $BRANCH)" -o -n "$(grep xanmod <<< $URL)" ];then
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
@@ -96,8 +98,10 @@ jobs:
             repo=${{ github.repository }}
           fi
           
+          echo "gh release create"
           gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $URL" || echo "release already exists"
           GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
+          echo "gh release upload"
           for i in .zst .sig .tar .md5; do
             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
           done
