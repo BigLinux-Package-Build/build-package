@@ -54,9 +54,9 @@ jobs:
           repo-mirror: ${{ secrets.REPO_MIRROR }}
           repo-dev: ${{ secrets.REPO_DEV }}
           
-      # # Tmate ##
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
+      # Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
         
       - name: Publish Package on GitHub
         shell: bash
