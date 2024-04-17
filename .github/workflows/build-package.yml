@@ -87,22 +87,22 @@ jobs:
           
           echo "If repos"
           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
-          if [ -n "$(grep stable <<< $BRANCH)" -o -n "$(grep xanmod <<< $URL)" ];then
+          if [ -n "$(grep stable <<< $BRANCH)" -o -n "$(grep xanmod <<< $URL)" -a -n "$(grep biglinux <<< $URL)" ];then
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
             repo=$(sed 's|https://github.com/||' <<< $URL)
             
             echo "${{ secrets.TOKEN_RELEASE }}" > token
             echo "$(sed 's|https://github.com/||' <<< $URL)" > repo
+            echo "bigrepo" > repotype
             
-          # elif [ -n "$(grep testing <<< $BRANCH)" ];then
-          #   echo ${{ github.token }} | gh auth login --with-token
-          #   repo=${{ github.repository }}
+
           else
             echo ${{ github.token }} | gh auth login --with-token
             repo=${{ github.repository }}
             
             echo "${{ github.token }}" > token
             echo "${{ github.repository }}" > repo
+            echo "gitrepo" > repotype
             
           fi
           
