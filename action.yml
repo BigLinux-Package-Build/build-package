@@ -85,7 +85,7 @@ runs:
         sudo git clone https://gitlab.manjaro.org/packages/core/pacman.git
         pushd pacman
         if [ -n "$COMMIT" ];then
-          git checkout $COMMIT
+          sudo git checkout $COMMIT
         fi
         sudo wget https://sources.archlinux.org/other/pacman/pacman-${PACMAN_VERSION}.tar.xz
         sudo tar -xvf pacman-${PACMAN_VERSION}.tar.xz
