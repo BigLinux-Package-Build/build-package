@@ -59,7 +59,7 @@ jobs:
       #   uses: mxschmitt/action-tmate@v3
         
       - name: Publish Package on GitHub
-        shell: bash -O extglob {0}
+        shell: bash #-O extglob {0}
         env:
           URL: ${{ github.event.client_payload.url }}
           BRANCH: ${{ github.event.client_payload.branch }}
@@ -91,33 +91,19 @@ jobs:
             if [ -n "$(grep stable <<< $BRANCH)" -o -n "$(grep xanmod <<< $URL)" ];then
               echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
               repo=$(sed 's|https://github.com/||' <<< $URL)
-              
-              echo "${{ secrets.TOKEN_RELEASE }}" > token
-              echo "$(sed 's|https://github.com/||' <<< $URL)" > repo
-              echo "bigrepo" > repotype
             fi
-
           else
             echo ${{ github.token }} | gh auth login --with-token
             repo=${{ github.repository }}
-            
-            echo "${{ github.token }}" > token
-            echo "${{ github.repository }}" > repo
-            echo "gitrepo" > repotype
-            
           fi
           
-#           echo "gh release create"
-#           gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $URL" || echo "release already exists"
-#           GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
-#           echo "gh release upload"
-#           for i in .zst .sig .tar .md5; do
-#             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
-#           done
-      
-      # Tmate ##
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+          echo "gh release create"
+          gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $URL" || echo "release already exists"
+          GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
+          echo "gh release upload"
+          for i in .zst .sig .tar .md5; do
+            find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
+          done
       
       - name: Push to Repo
         shell: bash
@@ -135,53 +121,57 @@ jobs:
           eval `ssh-agent -s`
           ssh-add /home/runner/.ssh/github_actions
           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
-          ip=$(ssh ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }} -p ${{ secrets.PKGBUILD_PORT }} 'echo $(curl -s ident.me) | tail -n1')
-          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} $ip >> /home/runner/.ssh/known_hosts
+          # ip=$(ssh ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }} -p ${{ secrets.PKGBUILD_PORT }} 'echo $(curl -s ident.me) | tail -n1')
+          # ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} $ip >> /home/runner/.ssh/known_hosts
           
-          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-          cd $gitfolder
-          ls -lh
-          if [ -n "$(grep testing <<< $MANJARO_BRANCH)" -o -n "$(grep manjaro-testing <<< $BRANCH)" ]; then
-            branch=manjaro-testing
-            echo "1"
-          elif [ -n "$MANJARO_BRANCH" ]; then
-            echo "2"
-            #cancel push to repo
-            curl -s -H "Authorization: token ${{ github.token }}" \
-            -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
-            sleep infinity
-          elif [ -n "$(grep xanmod <<< $URL)" ]; then
-            branch=testing
-            echo "3"
-          elif [ -n "$(grep update-stable <<< $BRANCH)" ]; then
-            branch=update-stable
-            echo "4"
-          elif [ -n "$(grep update-testing <<< $BRANCH)" ]; then
-            branch=update-testing
-            echo "5"
-          elif [ -n "$(grep unstable <<< $BRANCH)" -o -n "$(grep development <<< $BRANCH)" ];then
-            branch=${{ secrets.REPO_UNSTABLE }}
-            echo "6"
-          elif [ -n "$(grep testing <<< $BRANCH)" ];then
-            branch=testing
-            echo "7"
-          elif [ -n "$(grep stable <<< $BRANCH)" ];then
-            branch=stable
-            echo "8"
-          # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" ]; then
+          # gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          # cd $gitfolder
+          # ls -lh
+          # if [ -n "$(grep testing <<< $MANJARO_BRANCH)" -o -n "$(grep manjaro-testing <<< $BRANCH)" ]; then
+          #   branch=manjaro-testing
+          #   echo "1"
+          # elif [ -n "$MANJARO_BRANCH" ]; then
+          #   echo "2"
           #   #cancel push to repo
           #   curl -s -H "Authorization: token ${{ github.token }}" \
           #   -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
           #   sleep infinity
-          else
-            branch=${{ secrets.REPO_UNSTABLE }}
-            echo "9"
-          fi
-          for i in *.zst *.sig *.md5; do
-          test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@$ip:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
-          sleep 10
-          done
-          exit 0
+          # elif [ -n "$(grep xanmod <<< $URL)" ]; then
+          #   branch=testing
+          #   echo "3"
+          # elif [ -n "$(grep update-stable <<< $BRANCH)" ]; then
+          #   branch=update-stable
+          #   echo "4"
+          # elif [ -n "$(grep update-testing <<< $BRANCH)" ]; then
+          #   branch=update-testing
+          #   echo "5"
+          # elif [ -n "$(grep unstable <<< $BRANCH)" -o -n "$(grep development <<< $BRANCH)" ];then
+          #   branch=${{ secrets.REPO_UNSTABLE }}
+          #   echo "6"
+          # elif [ -n "$(grep testing <<< $BRANCH)" ];then
+          #   branch=testing
+          #   echo "7"
+          # elif [ -n "$(grep stable <<< $BRANCH)" ];then
+          #   branch=stable
+          #   echo "8"
+          # # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" ]; then
+          # #   #cancel push to repo
+          # #   curl -s -H "Authorization: token ${{ github.token }}" \
+          # #   -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
+          # #   sleep infinity
+          # else
+          #   branch=${{ secrets.REPO_UNSTABLE }}
+          #   echo "9"
+          # fi
+          # for i in *.zst *.sig *.md5; do
+          # test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@$ip:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
+          # sleep 10
+          # done
+          # exit 0
+      
+      # Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
           
       - name: Telegram Alert Fail
         # if: ${{ failure() || cancelled() }}
