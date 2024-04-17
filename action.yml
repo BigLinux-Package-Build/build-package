@@ -82,7 +82,7 @@ runs:
         PACMAN_VERSION: 6.0.1
         COMMIT: 94a9192f6d5abbab1672c7edda390622c5e55696
       run: |
-        sudo git clone --depth 1 https://gitlab.manjaro.org/packages/core/pacman.git
+        sudo git clone https://gitlab.manjaro.org/packages/core/pacman.git
         pushd pacman
         if [ -n "$COMMIT" ];then
           git checkout $COMMIT
