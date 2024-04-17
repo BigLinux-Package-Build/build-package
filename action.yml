@@ -80,13 +80,17 @@ runs:
       shell: bash
       env:
         PACMAN_VERSION: 6.0.1
+        COMMIT: 94a9192f6d5abbab1672c7edda390622c5e55696
       run: |
         sudo git clone --depth 1 https://gitlab.manjaro.org/packages/core/pacman.git
         pushd pacman
+        if [ -n "$COMMIT" ];then
+          git checkout $COMMIT
+        fi
         sudo wget https://sources.archlinux.org/other/pacman/pacman-${PACMAN_VERSION}.tar.xz
         sudo tar -xvf pacman-${PACMAN_VERSION}.tar.xz
         pushd pacman-${PACMAN_VERSION}
-        # sudo patch -p1 -i ../pacman-sync-first-option.patch
+        sudo patch -p1 -i ../pacman-sync-first-option.patch
         sudo meson --prefix=/usr \
                     --buildtype=plain \
                     -Ddoc=disabled \
