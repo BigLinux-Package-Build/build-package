@@ -90,22 +90,34 @@ jobs:
           if [ -n "$(grep stable <<< $BRANCH)" -o -n "$(grep xanmod <<< $URL)" ];then
             echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
             repo=$(sed 's|https://github.com/||' <<< $URL)
+            
+            echo "${{ secrets.TOKEN_RELEASE }}" > token
+            echo "$(sed 's|https://github.com/||' <<< $URL)" > repo
+            
           # elif [ -n "$(grep testing <<< $BRANCH)" ];then
           #   echo ${{ github.token }} | gh auth login --with-token
           #   repo=${{ github.repository }}
           else
             echo ${{ github.token }} | gh auth login --with-token
             repo=${{ github.repository }}
+            
+            echo "${{ github.token }}" > token
+            echo "${{ github.repository }}" > repo
+            
           fi
           
-          echo "gh release create"
-          gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $URL" || echo "release already exists"
-          GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
-          echo "gh release upload"
-          for i in .zst .sig .tar .md5; do
-            find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
-          done
-          
+#           echo "gh release create"
+#           gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $URL" || echo "release already exists"
+#           GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
+#           echo "gh release upload"
+#           for i in .zst .sig .tar .md5; do
+#             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
+#           done
+      
+      # Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+      
       - name: Push to Repo
         shell: bash
         env:
