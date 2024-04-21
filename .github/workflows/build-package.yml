@@ -68,6 +68,10 @@ jobs:
           cd $gitfolder
           ls -lh
           
+          if [ -n "$(grep linux-zen <<< $gitfolder)" ];then
+            exit 0
+          fi
+          
           #Release#
           echo "Release"
           source PKGBUILD
