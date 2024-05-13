@@ -220,41 +220,41 @@ runs:
     #   uses: mxschmitt/action-tmate@v3
     #   if: "${{ inputs.tmate == 'true' }}"
         
-    - name: Clean System
-      if: "${{ inputs.tmate == '' }}"
-      shell: bash
-      run: |
-        echo "Clean System"
-        if [ -z "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
-          df -h
-          sudo rm -rf \
-            /imagegeneration \
-            /opt/az \
-            /opt/ghc \
-            /opt/pipx \
-            /opt/google \
-            /opt/microsoft \
-            /opt/hostedtoolcache \
-            /usr/lib/gcc \
-            /usr/lib/llvm* \
-            /var/lib/mysql \
-            /var/lib/snapd \
-            /var/lib/docker \
-            /usr/lib/google* \
-            /usr/lib/firefox \
-            /usr/local/julia* \
-            /usr/local/.ghcup \
-            /usr/local/aws-cli \
-            /usr/local/lib/android \
-            /usr/local/aws-sam-cli \
-            /usr/local/share/chromium \
-            /usr/local/lib/node_modules \
-            /usr/local/share/powershell \
-            /usr/share/swift \
-            /usr/share/dotnet
-            echo "End Clean System"
-            df -h
-        fi
+    # - name: Clean System
+    #   if: "${{ inputs.tmate == '' }}"
+    #   shell: bash
+    #   run: |
+    #     echo "Clean System"
+    #     if [ -z "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
+    #       df -h
+    #       sudo rm -rf \
+    #         /imagegeneration \
+    #         /opt/az \
+    #         /opt/ghc \
+    #         /opt/pipx \
+    #         /opt/google \
+    #         /opt/microsoft \
+    #         /opt/hostedtoolcache \
+    #         /usr/lib/gcc \
+    #         /usr/lib/llvm* \
+    #         /var/lib/mysql \
+    #         /var/lib/snapd \
+    #         /var/lib/docker \
+    #         /usr/lib/google* \
+    #         /usr/lib/firefox \
+    #         /usr/local/julia* \
+    #         /usr/local/.ghcup \
+    #         /usr/local/aws-cli \
+    #         /usr/local/lib/android \
+    #         /usr/local/aws-sam-cli \
+    #         /usr/local/share/chromium \
+    #         /usr/local/lib/node_modules \
+    #         /usr/local/share/powershell \
+    #         /usr/share/swift \
+    #         /usr/share/dotnet
+    #         echo "End Clean System"
+    #         df -h
+    #     fi
       
     - name: Setup TMATE Session
       uses: mxschmitt/action-tmate@v3
