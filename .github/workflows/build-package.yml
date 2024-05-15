@@ -8,6 +8,7 @@ on:
       - AUR/*
       - xivastudio/*
       - URL/*
+      - BigLinuxAur/*
 
   workflow_dispatch:
     inputs:
