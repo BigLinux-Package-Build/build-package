@@ -110,6 +110,9 @@ runs:
         popd
         sudo rm -rf pacman
         
+        # Remove SyncFirst
+        sudo sed -i '/SyncFirst/d' /etc/pacman.conf
+        
         #add biglinux repository
         sudo sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf
         sudo sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf
@@ -184,6 +187,9 @@ runs:
         sudo rm -rf manjaro-chrootbuild
         
         source <(curl -s https://gitlab.manjaro.org/packages/core/manjaro-release/-/raw/master/lsb-release)
+        
+        # Remove SyncFirst
+        sudo sed -i '/SyncFirst/d' /etc/chrootbuild/pacman.conf.x86_64
         
         #add biglinux repository
         sudo sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
