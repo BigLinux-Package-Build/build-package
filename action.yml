@@ -79,16 +79,18 @@ runs:
     - name: install pacman
       shell: bash
       env:
-        PACMAN_VERSION: 6.0.1
-        COMMIT: 94a9192f6d5abbab1672c7edda390622c5e55696
+        PACMAN_VERSION: 6.0.2
+        # COMMIT: 94a9192f6d5abbab1672c7edda390622c5e55696
       run: |
         sudo git clone https://gitlab.manjaro.org/packages/core/pacman.git
         pushd pacman
         if [ -n "$COMMIT" ];then
           sudo git checkout $COMMIT
         fi
-        sudo wget https://sources.archlinux.org/other/pacman/pacman-${PACMAN_VERSION}.tar.xz
-        sudo tar -xvf pacman-${PACMAN_VERSION}.tar.xz
+        # sudo wget https://sources.archlinux.org/other/pacman/pacman-${PACMAN_VERSION}.tar.xz
+        sudo wget https://github.com/BigLinux-Package-Build/build-iso/raw/main/pacman/pacman-v${PACMAN_VERSION}.tar.gz
+        # sudo tar -xvf pacman-${PACMAN_VERSION}.tar.xz
+        sudo tar -xvzf pacman-v${PACMAN_VERSION}.tar.gz
         pushd pacman-${PACMAN_VERSION}
         sudo patch -p1 -i ../pacman-sync-first-option.patch
         sudo meson --prefix=/usr \
