@@ -2,13 +2,13 @@ name: Build Package Teste
 
 # Controls when the workflow will run
 on:
-  repository_dispatch:
-    types:
+#   repository_dispatch:
+#     types:
   #     - biglinux/*
   #     - AUR/*
   #     - xivastudio/*
   #     - URL/*
-      - BigLinuxAur/*
+#       - BigLinuxAur/*
 
   workflow_dispatch:
     inputs:
@@ -158,7 +158,7 @@ jobs:
           sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
           
           # makepkg
-          echo 'PACKAGER="BigLinux Package Build <bigbruno@gmail.com>"' | sudo tee -a /etc/makepkg.conf > /dev/null
+          sed -i '/PACKAGER=/s/.*/\PACKAGER="BigLinux Package Build <bigbruno@gmail.com>\"/' /etc/makepkg.conf
           sed -i '/MAKEFLAGS=/s/.*/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
           
           # KeyRing
@@ -352,28 +352,3 @@ jobs:
 #         if: ${{ failure() }}
 #         run: |
 #           curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "🚨 FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} 🖥", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
-#           
-#         ## Tmate ##
-#       #- name: Setup tmate session
-#       #  uses: mxschmitt/action-tmate@v3 
-#           
-#         
-# #      - name: upload-cdn77
-# #        shell: bash -O extglob {0}
-# #        run: |
-# #          # if is not yet supported in composite https://github.com/actions/runner/blob/main/docs/adrs/0549-composite-run-steps.md#if-condition
-# #          if [ -z "${{ inputs.cdn77-host }}" ] || [ -z "${{ inputs.cdn77-user }}" ] || [ -z "${{ inputs.cdn77-pwd }}" ]; then 
-# #            echo "## not (all) credentials given for cdn77 upload"
-# #            exit 0
-# #          fi
-# #          
-# #          echo "## cdn77 upload"
-# #          
-# #          ssh-keyscan -t rsa ${{ inputs.cdn77-host }} >> /home/runner/.ssh/known_hosts
-# #          ## create target dir
-# #          sshpass -p "${{ inputs.cdn77-pwd }}" rsync -vaP --stats -e ssh ${{ inputs.edition }} \
-# #            ${{ inputs.cdn77-user }}@${{ inputs.cdn77-host }}:/www/
-# #          # upload
-# #          sshpass -p "${{ inputs.cdn77-pwd }}" rsync -vaP \
-# #            --stats -e ssh ${{ steps.upload-prepare.outputs.upload-files }} \
-# #            ${{ inputs.cdn77-user }}@${{ inputs.cdn77-host }}:/www/${{ inputs.edition }}/${{ inputs.version }}/
