@@ -159,6 +159,7 @@ jobs:
           
           # makepkg
           echo 'PACKAGER="BigLinux Package Build <bigbruno@gmail.com>"' | sudo tee -a /etc/makepkg.conf > /dev/null
+          sed -i '/MAKEFLAGS=/s/.*/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
           
           # KeyRing
           pacman-key -r 45EC44879815E2A6
@@ -170,13 +171,13 @@ jobs:
           sed -i 's|https://repo.manjaro.org/repo|https://mirrors2.manjaro.org|' /usr/lib/manjaro-chrootbuild/util.sh
           sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
 
-      #   ## Tmate ##
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
-      #   if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-      #   # timeout-minutes: 60
-      #   with:
-      #     install-dependencies: false
+        ## Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        # timeout-minutes: 60
+        with:
+          install-dependencies: false
 
       - name: Download Source
         if: "${{ inputs.tmate == '' }}"
@@ -235,13 +236,13 @@ jobs:
           exit 0' > md5.sh
           bash md5.sh
 
-      ## Tmate ##
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-        # timeout-minutes: 60
-        with:
-          install-dependencies: false
+      # ## Tmate ##
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      #   # timeout-minutes: 60
+      #   with:
+      #     install-dependencies: false
 
       - name: Publish Package on GitHub
         shell: bash #-O extglob {0}
@@ -257,8 +258,6 @@ jobs:
           
           echo "If repos"
           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
-          echo url=$url
-          echo git_branch=$git_branch
           if [ -n "$(grep -i biglinux <<< $url)" -o -n "$(grep -i xivastudio <<< $url)" ];then
             if [ -n "$(grep stable <<< $git_branch)" -o -n "$(grep xanmod <<< $url)" ];then
               echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
@@ -271,7 +270,6 @@ jobs:
           
           # Release
           release=$(basename "$url")-$pkgver
-          echo release=$release
           
           echo "gh release create"
           gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $url" || echo "release already exists"
