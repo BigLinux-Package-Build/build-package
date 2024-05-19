@@ -35,13 +35,13 @@ jobs:
         run: |
           # Install Packages
           pacman -Sy --noconfirm \
-            gh \
             git \
             wget \
             nano \
             tmate \
             docker \
             openssh \
+            github-cli \
             manjaro-chrootbuild
           
           # Create User
