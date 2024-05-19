@@ -230,67 +230,51 @@ jobs:
       ## Tmate ##
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-#         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         # timeout-minutes: 60
         with:
           install-dependencies: false
+
+      - name: Publish Package on GitHub
+        shell: bash #-O extglob {0}
+        run: |
+          # Publish Package on GitHub
+          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          cd $gitfolder
+          ls -lh
           
+          if [ -n "$(grep linux-zen <<< $gitfolder)" ];then
+            exit 0
+          fi
           
-#       - name: Publish Package on GitHub
-#         shell: bash #-O extglob {0}
-#         env:
-#           URL: $url
-#           BRANCH: ${{ github.event.client_payload.branch }}
-#         run: |
-#           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
-#           cd $gitfolder
-#           ls -lh
-#           
-#           if [ -n "$(grep linux-zen <<< $gitfolder)" ];then
-#             exit 0
-#           fi
-#           
-#           #Release#
-#           echo "Release"
-#           source PKGBUILD
-#           release=${pkgname}-${pkgver}-${pkgrel}
-#           
-#           # if [ -n "$(grep https://github.com/biglinux/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
-#           #   echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
-#           #   repo=$(sed 's|https://github.com/||' <<< $URL)
-#           # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
-#           #   echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
-#           #   repo=$(sed 's|https://github.com/||' <<< $URL)
-#           # else
-#           #   echo ${{ github.token }} | gh auth login --with-token
-#           #   # token=${{ github.token }}
-#           #   repo=${{ github.repository }}
-#           # fi
-#           
-#           echo "If repos"
-#           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
-#           if [ -n "$(grep -i biglinux <<< $URL)" ];then
-#             if [ -n "$(grep stable <<< $BRANCH)" -o -n "$(grep xanmod <<< $URL)" ];then
-#               echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
-#               repo=$(sed 's|https://github.com/||' <<< $URL)
-#             fi
-#           else
-#             echo ${{ github.token }} | gh auth login --with-token
-#             repo=${{ github.repository }}
-#           fi
-#           
-#           echo "gh release create"
-#           gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $URL" || echo "release already exists"
-#           GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
-#           echo "gh release upload"
-#           for i in .zst .sig .tar .md5; do
-#             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
-#           done
+          #Release#
+          echo "Release"
+          source PKGBUILD
+          release=${pkgname}-${pkgver}-${pkgrel}
+          
+          echo "If repos"
+          # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
+          if [ -n "$(grep -i biglinux <<< $url)" ];then
+            if [ -n "$(grep stable <<< $git_branch)" -o -n "$(grep xanmod <<< $url)" ];then
+              echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
+              repo=$(sed 's|https://github.com/||' <<< $url)
+            fi
+          else
+            echo ${{ github.token }} | gh auth login --with-token
+            repo=${{ github.repository }}
+          fi
+          
+          echo "gh release create"
+          gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $url" || echo "release already exists"
+          GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
+          echo "gh release upload"
+          for i in .zst .sig .tar .md5; do
+            find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
+          done
 #       
 #       - name: Push to Repo
 #         shell: bash
 #         env:
-#           URL: $url
 #           BRANCH: ${{ github.event.client_payload.branch }}
 #           MANJARO_BRANCH: ${{ github.event.client_payload.manjaro_branch }}
 #         run: |
@@ -319,7 +303,7 @@ jobs:
 #             curl -s -H "Authorization: token ${{ github.token }}" \
 #             -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
 #             sleep infinity
-#           elif [ -n "$(grep xanmod <<< $URL)" ]; then
+#           elif [ -n "$(grep xanmod <<< $url)" ]; then
 #             branch=testing
 #             echo "3"
 #           elif [ -n "$(grep update-stable <<< $BRANCH)" ]; then
@@ -337,7 +321,7 @@ jobs:
 #           elif [ -n "$(grep stable <<< $BRANCH)" ];then
 #             branch=stable
 #             echo "8"
-#           # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" ]; then
+#           # elif [ -n "$(grep https://github.com/xivastudio/ <<< $url)" ]; then
 #           #   #cancel push to repo
 #           #   curl -s -H "Authorization: token ${{ github.token }}" \
 #           #   -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
