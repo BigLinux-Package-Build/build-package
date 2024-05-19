@@ -30,54 +30,12 @@ jobs:
         - /var:/lixo/var
     steps:
       - uses: actions/checkout@v4
-      - name: Clean System
-        shell: bash -O extglob {0}
-        run: |
-          echo "Clean System"
-          df -h
-          docker image prune --all --force
-          rm -rf \
-          /lixo/opt/google \
-          /lixo/opt/pipx \
-          /lixo/opt/microsoft \
-          /lixo/opt/az \
-          /lixo/opt/hostedtoolcache \
-          /lixo/usr/local/.ghcup \
-          /lixo/usr/share/dotnet \
-          /lixo/usr/share/swift \
-          /lixo/usr/share/dotnet \
-          /lixo/usr/share/miniconda \
-          /lixo/usr/local/lib/android \
-          /lixo/usr/local/lib/node_modules \
-          /lixo/usr/lib/snapd \
-          /lixo/usr/lib/modules \
-          /lixo/usr/lib/python3 \
-          /lixo/usr/lib/firefox \
-          /lixo/usr/lib/heroku \
-          /lixo/usr/lib/mono \
-          /lixo/usr/lib/llvm-13 \
-          /lixo/usr/lib/llvm-14 \
-          /lixo/usr/lib/llvm-15 \
-          /lixo/usr/lib/gcc \
-          /lixo/usr/lib/google-cloud-sdk \
-          /lixo/usr/lib/jvm \
-          /lixo/usr/local/doc \
-          /lixo/usr/local/sqlpackage \
-          /lixo/usr/local/n \
-          /lixo/usr/local/aws-sam-cli \
-          /lixo/usr/local/aws-cli \
-          /lixo/usr/local/julia1.10.3 \
-          /lixo/usr/local/share/vcpkg \
-          /lixo/usr/local/share/chromium \
-          /lixo/usr/local/share/powershell
-          df -h
-          # /lixo/var/lib/docker/overlay2/* \
-
       - name: Dependencies
         shell: bash #-O extglob {0}
         run: |
           # Install Packages
           pacman -Sy --noconfirm \
+            gh \
             git \
             wget \
             nano \
@@ -91,12 +49,53 @@ jobs:
           passwd -d builduser
           printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers
 
+      # - name: Clean System
+      #   shell: bash -O extglob {0}
+      #   run: |
+      #     echo "Clean System"
+      #     df -h
+      #     docker image prune --all --force
+      #     rm -rf \
+      #     /lixo/opt/google \
+      #     /lixo/opt/pipx \
+      #     /lixo/opt/microsoft \
+      #     /lixo/opt/az \
+      #     /lixo/opt/hostedtoolcache \
+      #     /lixo/usr/local/.ghcup \
+      #     /lixo/usr/share/dotnet \
+      #     /lixo/usr/share/swift \
+      #     /lixo/usr/share/dotnet \
+      #     /lixo/usr/share/miniconda \
+      #     /lixo/usr/local/lib/android \
+      #     /lixo/usr/local/lib/node_modules \
+      #     /lixo/usr/lib/snapd \
+      #     /lixo/usr/lib/modules \
+      #     /lixo/usr/lib/python3 \
+      #     /lixo/usr/lib/firefox \
+      #     /lixo/usr/lib/heroku \
+      #     /lixo/usr/lib/mono \
+      #     /lixo/usr/lib/llvm-13 \
+      #     /lixo/usr/lib/llvm-14 \
+      #     /lixo/usr/lib/llvm-15 \
+      #     /lixo/usr/lib/gcc \
+      #     /lixo/usr/lib/google-cloud-sdk \
+      #     /lixo/usr/lib/jvm \
+      #     /lixo/usr/local/doc \
+      #     /lixo/usr/local/sqlpackage \
+      #     /lixo/usr/local/n \
+      #     /lixo/usr/local/aws-sam-cli \
+      #     /lixo/usr/local/aws-cli \
+      #     /lixo/usr/local/julia1.10.3 \
+      #     /lixo/usr/local/share/vcpkg \
+      #     /lixo/usr/local/share/chromium \
+      #     /lixo/usr/local/share/powershell
+      #     df -h
+
       - name: Changes in System
         shell: bash #-O extglob {0}
         run: |
           # pacman.conf
           echo 'Server = https://mirrors2.manjaro.org/stable/$repo/$arch' | tee /etc/pacman.d/mirrorlist
-          add biglinux repository
           sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf
           sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf
           sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
@@ -115,12 +114,12 @@ jobs:
           Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf
           
           sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf
-
+          
           # KeyRing
           pacman-key -r 45EC44879815E2A6
           pacman-key --lsign-key 45EC44879815E2A6
           pacman-key --populate biglinux
-
+          
           # Changes in manjaro-chrootbuild
           sed -i 's|https://repo.manjaro.org/repo|https://mirrors2.manjaro.org|' /usr/lib/manjaro-chrootbuild/util.sh
           sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
@@ -151,6 +150,7 @@ jobs:
             sed -i '/source=/s/\.git"/\.git#branch=${{ inputs.git_branch }}"/' PKGBUILD
           fi
           
+          # Build
           sudo -u builduser bash -c 'sudo chrootbuild -p . -b ${{ inputs.manjaro_branch }}'
 
       - name: Rename Package
