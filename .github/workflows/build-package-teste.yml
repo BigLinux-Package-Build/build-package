@@ -118,6 +118,7 @@ jobs:
           # KeyRing
           pacman-key -r 45EC44879815E2A6
           pacman-key --lsign-key 45EC44879815E2A6
+          pacman -Sy biglinux-keyring
           pacman-key --populate biglinux
           
           # Changes in manjaro-chrootbuild
@@ -151,7 +152,7 @@ jobs:
           fi
           
           # Build
-          sudo -u builduser bash -c 'sudo chrootbuild -p . -b ${{ inputs.manjaro_branch }}'
+          sudo -u builduser bash -c 'sudo chrootbuild -H -p . -b ${{ inputs.manjaro_branch }}'
 
       - name: Rename Package
         shell: bash -O extglob {0}
