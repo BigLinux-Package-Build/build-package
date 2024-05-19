@@ -2,13 +2,13 @@ name: Build Package Teste
 
 # Controls when the workflow will run
 on:
-  # repository_dispatch:
-  #   types:
-  # #     - biglinux/*
-  # #     - AUR/*
-  # #     - xivastudio/*
-  # #     - URL/*
-  #     - BigLinuxAur/*
+  repository_dispatch:
+    types:
+  #     - biglinux/*
+  #     - AUR/*
+  #     - xivastudio/*
+  #     - URL/*
+      - BigLinuxAur/*
 
   workflow_dispatch:
     inputs:
@@ -304,12 +304,6 @@ jobs:
           if [ -n "$(grep testing <<< $manjaro_branch)" -o -n "$(grep manjaro-testing <<< $git_branch)" ]; then
             branch=manjaro-testing
             echo "1"
-          elif [ -n "$manjaro_branch" ]; then
-            echo "2"
-            #cancel push to repo
-            curl -s -H "Authorization: token ${{ github.token }}" \
-            -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
-            sleep infinity
           elif [ -n "$(grep xanmod <<< $url)" ]; then
             branch=testing
             echo "3"
