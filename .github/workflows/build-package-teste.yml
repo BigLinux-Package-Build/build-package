@@ -40,6 +40,9 @@ jobs:
         shell: bash
         run: |
           echo "xpto=casa" >> $GITHUB_ENV
+          if [ -n "${{ github.event.client_payload.url }}" ];then
+            echo "url=${{ github.event.client_payload.url }}" >> $GITHUB_ENV
+          fi
 
       - name: echo PayLoads
         shell: bash
