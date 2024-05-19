@@ -332,9 +332,10 @@ jobs:
             sleep 10
           done
 
-#       # # Tmate ##
-#       # - name: Setup tmate session
-#       #   uses: mxschmitt/action-tmate@v3
+      # Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ failure() }}
 #           
 #       - name: Telegram Alert Fail
 #         # if: ${{ failure() || cancelled() }}
