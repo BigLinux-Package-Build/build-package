@@ -17,6 +17,12 @@ on:
         description: 'With TMATE'
         required: false
         default: true
+        
+env:
+  gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
+  gpg-passphrase: ${{ secrets.PASSPHRASE }}
+  repo-mirror: ${{ secrets.REPO_MIRROR }}
+  repo-dev: ${{ secrets.REPO_DEV }}
 
 jobs:
   build:
