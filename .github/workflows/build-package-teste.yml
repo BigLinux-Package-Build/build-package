@@ -31,7 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set ENVs
-        shell: bash
         run: |
           echo "git_branch=${{ github.event.client_payload.branch }}" >> $GITHUB_ENV
           echo "gpg-key=${{ secrets.GPG_PRIVATE_KEY }}" >> $GITHUB_ENV
