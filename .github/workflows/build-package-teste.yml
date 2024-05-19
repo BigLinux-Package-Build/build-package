@@ -65,7 +65,6 @@ jobs:
           echo "url: $url"
           echo "git_branch: $git_branch"
           echo "manjaro_branch: $manjaro_branch"
-          echo "$repo_dev"
 
       - name: Dependencies
         shell: bash #-O extglob {0}
@@ -209,7 +208,7 @@ jobs:
         shell: bash -O extglob {0}
         run: |
           # Sign Package
-          cat <(echo -e "${{ inputs.gpg_key }}") | gpg --batch --import &>/dev/null
+          cat <(echo -e "$gpg_key") | gpg --batch --import &>/dev/null
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
