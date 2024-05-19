@@ -18,6 +18,18 @@ on:
         required: false
         default: true
 
+env:
+  manjaro_branch: ${{ env.manjaro_branch }}
+  git_branch: ${{ github.event.client_payload.branch }}
+  gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
+  gpg-passphrase: ${{ secrets.PASSPHRASE }}
+  extrarepo: ${{ github.event.client_payload.extrarepo }}
+  extrapackage: ${{ github.event.client_payload.extrapackage }}
+  tmate: ${{ inputs.debug_enabled }}
+  repo-mirror: ${{ secrets.REPO_MIRROR }}
+  repo-dev: ${{ secrets.REPO_DEV }}
+  url: $url
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -101,17 +113,17 @@ jobs:
           sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
           sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
           echo '
-          [biglinux-'"${{ inputs.repo-dev }}"']
+          [biglinux-'"$repo-dev"']
           SigLevel = PackageRequired
-          Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/'"${{ inputs.repo-dev }}"'/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo-mirror"'.biglinux.com.br/'"$repo-dev"'/$arch' | tee -a /etc/pacman.conf
           echo '
           [biglinux-testing]
           SigLevel = PackageRequired
-          Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/testing/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo-mirror"'.biglinux.com.br/testing/$arch' | tee -a /etc/pacman.conf
           echo '
           [biglinux-stable]
           SigLevel = PackageRequired
-          Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo-mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf
           
           sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf
           
@@ -125,12 +137,6 @@ jobs:
           sed -i 's|https://repo.manjaro.org/repo|https://mirrors2.manjaro.org|' /usr/lib/manjaro-chrootbuild/util.sh
           sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
 
-      - name: Download Source
-        if: "${{ inputs.tmate == '' }}"
-        shell: bash
-        run: |
-          git clone ${{ github.event.client_payload.url }}.git
-
       #   ## Tmate ##
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
@@ -139,6 +145,12 @@ jobs:
       #   with:
       #     install-dependencies: false
 
+      - name: Download Source
+        if: "${{ inputs.tmate == '' }}"
+        shell: bash
+        run: |
+          git clone $url.git
+
       - name: Build
         shell: bash -O extglob {0}
         run: |
@@ -146,13 +158,13 @@ jobs:
           cd $gitfolder
           
           # CheckOut
-          if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
-            git checkout ${{ inputs.git_branch }}
-            sed -i '/source=/s/\.git"/\.git#branch=${{ inputs.git_branch }}"/' PKGBUILD
+          if [ -n "$(echo $url | grep https://github.com/biglinux/)" ]; then
+            git checkout $git_branch
+            sed -i '/source=/s/\.git"/\.git#branch=$git_branch"/' PKGBUILD
           fi
           
           # Build
-          sudo -u builduser bash -c 'sudo chrootbuild -H -p . -b ${{ inputs.manjaro_branch }}'
+          sudo -u builduser bash -c 'sudo chrootbuild -H -p . -b $manjaro_branch'
 
       - name: Rename Package
         shell: bash -O extglob {0}
@@ -172,7 +184,7 @@ jobs:
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
-            gpg --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --detach-sign ${p}
+            gpg --pinentry-mode loopback --passphrase "$gpg-passphrase" --detach-sign ${p}
           done
 
       - name: CheckSum
@@ -198,7 +210,7 @@ jobs:
 #       - name: Publish Package on GitHub
 #         shell: bash #-O extglob {0}
 #         env:
-#           URL: ${{ github.event.client_payload.url }}
+#           URL: $url
 #           BRANCH: ${{ github.event.client_payload.branch }}
 #         run: |
 #           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
@@ -249,7 +261,7 @@ jobs:
 #       - name: Push to Repo
 #         shell: bash
 #         env:
-#           URL: ${{ github.event.client_payload.url }}
+#           URL: $url
 #           BRANCH: ${{ github.event.client_payload.branch }}
 #           MANJARO_BRANCH: ${{ github.event.client_payload.manjaro_branch }}
 #         run: |
