@@ -39,6 +39,7 @@ jobs:
       - name: Set ENVs
         shell: bash
         run: |
+          # Set ENVs
           if [ -n "${{ github.event.client_payload.url }}" ];then
             echo "url=${{ github.event.client_payload.url }}" >> $GITHUB_ENV
           fi
@@ -60,6 +61,7 @@ jobs:
       - name: echo PayLoads
         shell: bash
         run: |
+          # echo PayLoads
           echo "url: $url"
           echo "git_branch: $git_branch"
           echo "manjaro_branch: $manjaro_branch"
@@ -87,7 +89,7 @@ jobs:
       # - name: Clean System
       #   shell: bash -O extglob {0}
       #   run: |
-      #     echo "Clean System"
+      #     # Clean System
       #     df -h
       #     docker image prune --all --force
       #     rm -rf \
@@ -129,26 +131,27 @@ jobs:
       - name: Changes in System
         shell: bash #-O extglob {0}
         run: |
+          # Changes in System
           # pacman.conf
           echo 'Server = https://mirrors2.manjaro.org/stable/$repo/$arch' | tee /etc/pacman.d/mirrorlist
-          sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf
-          sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf
-          sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
-          sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
+          sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
           echo '
           [biglinux-'"${repo_dev}"']
           SigLevel = PackageRequired
-          Server = https://'"$repo_mirror"'.biglinux.com.br/'"${repo_dev}"'/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo_mirror"'.biglinux.com.br/'"${repo_dev}"'/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
           echo '
           [biglinux-testing]
           SigLevel = PackageRequired
-          Server = https://'"$repo_mirror"'.biglinux.com.br/testing/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo_mirror"'.biglinux.com.br/testing/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
           echo '
           [biglinux-stable]
           SigLevel = PackageRequired
-          Server = https://'"$repo_mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo_mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
           
-          sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf
+          sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
           
           # KeyRing
           pacman-key -r 45EC44879815E2A6
@@ -175,8 +178,9 @@ jobs:
           git clone $url.git
 
       - name: Build
-        shell: bash -O extglob {0}
+        shell: bash #-O extglob {0}
         run: |
+          # Build
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           
@@ -192,6 +196,7 @@ jobs:
       - name: Rename Package
         shell: bash -O extglob {0}
         run: |
+          # Rename Package
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           for i in *.zst; do
@@ -200,9 +205,10 @@ jobs:
             fi
           done
 
-      - name: sign package
+      - name: Sign Package
         shell: bash -O extglob {0}
         run: |
+          # Sign Package
           cat <(echo -e "${{ inputs.gpg_key }}") | gpg --batch --import &>/dev/null
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
@@ -213,6 +219,7 @@ jobs:
       - name: CheckSum
         shell: bash -O extglob {0}
         run: |
+          # CheckSum
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           echo '#!/bin/bash
