@@ -2,13 +2,13 @@ name: Build Package Teste
 
 # Controls when the workflow will run
 on:
-  repository_dispatch:
-    types:
+#   repository_dispatch:
+#     types:
   #     - biglinux/*
   #     - AUR/*
   #     - xivastudio/*
   #     - URL/*
-      - BigLinuxAur/*
+#       - BigLinuxAur/*
 
   workflow_dispatch:
     inputs:
