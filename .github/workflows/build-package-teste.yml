@@ -80,6 +80,7 @@ jobs:
             wget \
             nano \
             tmate \
+            rsync \
             docker \
             openssh \
             github-cli \
