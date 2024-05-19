@@ -6,7 +6,7 @@ on:
     types:
   #     - biglinux/*
   #     - AUR/*
-  #     - xivastudio/*
+      - xivastudio/*
   #     - URL/*
       - BigLinuxAur/*
 
