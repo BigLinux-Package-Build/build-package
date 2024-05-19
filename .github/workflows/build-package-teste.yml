@@ -18,16 +18,6 @@ on:
         required: false
         default: true
 
-env:
-  git_branch: ${{ github.event.client_payload.branch }}
-  gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
-  gpg-passphrase: ${{ secrets.PASSPHRASE }}
-  extrarepo: ${{ github.event.client_payload.extrarepo }}
-  extrapackage: ${{ github.event.client_payload.extrapackage }}
-  repo-mirror: ${{ secrets.REPO_MIRROR }}
-  repo-dev: ${{ secrets.REPO_DEV }}
-  url: ${{ github.event.client_payload.url }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,14 +30,26 @@ jobs:
         - /var:/lixo/var
     steps:
       - uses: actions/checkout@v4
-      - name: echo PayLoads
+      - name: Set ENVs
+        shell: bash
         run: |
-          echo PayLoads
+          echo "git_branch=${{ github.event.client_payload.branch }}" >> $GITHUB_ENV
+          echo "gpg-key=${{ secrets.GPG_PRIVATE_KEY }}" >> $GITHUB_ENV
+          echo "gpg-passphrase=${{ secrets.PASSPHRASE }}" >> $GITHUB_ENV
+          echo "extrarepo=${{ github.event.client_payload.extrarepo }}" >> $GITHUB_ENV
+          echo "extrapackage=${{ github.event.client_payload.extrapackage }}" >> $GITHUB_ENV
+          echo "repo-mirror=${{ secrets.REPO_MIRROR }}" >> $GITHUB_ENV
+          echo "repo-dev=${{ secrets.REPO_DEV }}" >> $GITHUB_ENV
+          echo "url=${{ github.event.client_payload.url }}" >> $GITHUB_ENV
           if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
             echo "manjaro_branch=stable" >> $GITHUB_ENV
           else
             echo "manjaro_branch=${{ github.event.client_payload.manjaro_branch }}" >> $GITHUB_ENV
           fi
+
+      - name: echo PayLoads
+        shell: bash
+        run: |
           echo "url: $url"
           echo "git_branch: $git_branch"
           echo "manjaro_branch: $manjaro_branch"
