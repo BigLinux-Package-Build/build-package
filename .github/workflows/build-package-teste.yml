@@ -1,0 +1,346 @@
+name: Build Package Teste
+
+# Controls when the workflow will run
+on:
+  # repository_dispatch:
+  #   types:
+  #     - biglinux/*
+  #     - AUR/*
+  #     - xivastudio/*
+  #     - URL/*
+      - BigLinuxAur/*
+
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'With TMATE'
+        required: false
+        default: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: manjarolinux/build:latest
+      options: --privileged
+      volumes:
+        - /opt:/lixo/opt
+        - /usr:/lixo/usr
+        - /var:/lixo/var
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clean System
+        shell: bash -O extglob {0}
+        run: |
+          echo "Clean System"
+          df -h
+          docker image prune --all --force
+          rm -rf \
+          /lixo/opt/google \
+          /lixo/opt/pipx \
+          /lixo/opt/microsoft \
+          /lixo/opt/az \
+          /lixo/opt/hostedtoolcache \
+          /lixo/usr/local/.ghcup \
+          /lixo/usr/share/dotnet \
+          /lixo/usr/share/swift \
+          /lixo/usr/share/dotnet \
+          /lixo/usr/share/miniconda \
+          /lixo/usr/local/lib/android \
+          /lixo/usr/local/lib/node_modules \
+          /lixo/usr/lib/snapd \
+          /lixo/usr/lib/modules \
+          /lixo/usr/lib/python3 \
+          /lixo/usr/lib/firefox \
+          /lixo/usr/lib/heroku \
+          /lixo/usr/lib/mono \
+          /lixo/usr/lib/llvm-13 \
+          /lixo/usr/lib/llvm-14 \
+          /lixo/usr/lib/llvm-15 \
+          /lixo/usr/lib/gcc \
+          /lixo/usr/lib/google-cloud-sdk \
+          /lixo/usr/lib/jvm \
+          /lixo/usr/local/doc \
+          /lixo/usr/local/sqlpackage \
+          /lixo/usr/local/n \
+          /lixo/usr/local/aws-sam-cli \
+          /lixo/usr/local/aws-cli \
+          /lixo/usr/local/julia1.10.3 \
+          /lixo/usr/local/share/vcpkg \
+          /lixo/usr/local/share/chromium \
+          /lixo/usr/local/share/powershell
+          df -h
+          # /lixo/var/lib/docker/overlay2/* \
+
+      - name: Dependencies
+        shell: bash #-O extglob {0}
+        run: |
+          # Install Packages
+          pacman -Sy --noconfirm \
+            git \
+            wget \
+            nano \
+            tmate \
+            docker \
+            openssh \
+            manjaro-chrootbuild
+          
+          # Create User
+          useradd builduser -m
+          passwd -d builduser
+          printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers
+
+      - name: Changes in System
+        shell: bash #-O extglob {0}
+        run: |
+          # pacman.conf
+          echo 'Server = https://mirrors2.manjaro.org/stable/$repo/$arch' | tee /etc/pacman.d/mirrorlist
+          add biglinux repository
+          sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf
+          sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf
+          sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
+          sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
+          echo '
+          [biglinux-'"${{ inputs.repo-dev }}"']
+          SigLevel = PackageRequired
+          Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/'"${{ inputs.repo-dev }}"'/$arch' | tee -a /etc/pacman.conf
+          echo '
+          [biglinux-testing]
+          SigLevel = PackageRequired
+          Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/testing/$arch' | tee -a /etc/pacman.conf
+          echo '
+          [biglinux-stable]
+          SigLevel = PackageRequired
+          Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf
+          
+          sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf
+
+          # KeyRing
+          pacman-key -r 45EC44879815E2A6
+          pacman-key --lsign-key 45EC44879815E2A6
+          pacman-key --populate biglinux
+
+          # Changes in manjaro-chrootbuild
+          sed -i 's|https://repo.manjaro.org/repo|https://mirrors2.manjaro.org|' /usr/lib/manjaro-chrootbuild/util.sh
+          sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
+
+      - name: Download Source
+        if: "${{ inputs.tmate == '' }}"
+        shell: bash
+        run: |
+          git clone ${{ github.event.client_payload.url }}.git
+
+      #   ## Tmate ##
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      #   # timeout-minutes: 60
+      #   with:
+      #     install-dependencies: false
+
+      - name: Build
+        shell: bash -O extglob {0}
+        run: |
+          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          cd $gitfolder
+          
+          # CheckOut
+          if [ -n "$(echo ${{ github.event.client_payload.url }} | grep https://github.com/biglinux/)" ]; then
+            git checkout ${{ inputs.git_branch }}
+            sed -i '/source=/s/\.git"/\.git#branch=${{ inputs.git_branch }}"/' PKGBUILD
+          fi
+          
+          sudo -u builduser bash -c 'sudo chrootbuild -p . -b ${{ inputs.manjaro_branch }}'
+
+      - name: Rename Package
+        shell: bash -O extglob {0}
+        run: |
+          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          cd $gitfolder
+          for i in *.zst; do
+            if [ -n "$(ls $i | grep :)" ]; then
+              mv $i $(echo $i | sed 's/:/-/')
+            fi
+          done
+
+      - name: sign package
+        shell: bash -O extglob {0}
+        run: |
+          cat <(echo -e "${{ inputs.gpg-key }}") | gpg --batch --import &>/dev/null
+          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          cd $gitfolder
+          for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
+            gpg --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --detach-sign ${p}
+          done
+
+      - name: CheckSum
+        shell: bash -O extglob {0}
+        run: |
+          gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+          cd $gitfolder
+          echo '#!/bin/bash
+          for i in $(ls *.zst); do md5sum $i >> $i.md5; done
+          for i in $(ls *.sig | sed 's/.sig//'); do md5sum $i.sig >> $i.md5; done
+          exit 0' > md5.sh
+          bash md5.sh
+
+      ## Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        # timeout-minutes: 60
+        with:
+          install-dependencies: false
+          
+          
+#       - name: Publish Package on GitHub
+#         shell: bash #-O extglob {0}
+#         env:
+#           URL: ${{ github.event.client_payload.url }}
+#           BRANCH: ${{ github.event.client_payload.branch }}
+#         run: |
+#           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+#           cd $gitfolder
+#           ls -lh
+#           
+#           if [ -n "$(grep linux-zen <<< $gitfolder)" ];then
+#             exit 0
+#           fi
+#           
+#           #Release#
+#           echo "Release"
+#           source PKGBUILD
+#           release=${pkgname}-${pkgver}-${pkgrel}
+#           
+#           # if [ -n "$(grep https://github.com/biglinux/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
+#           #   echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
+#           #   repo=$(sed 's|https://github.com/||' <<< $URL)
+#           # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" -a -n "$(grep stable <<< $BRANCH)" ]; then
+#           #   echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
+#           #   repo=$(sed 's|https://github.com/||' <<< $URL)
+#           # else
+#           #   echo ${{ github.token }} | gh auth login --with-token
+#           #   # token=${{ github.token }}
+#           #   repo=${{ github.repository }}
+#           # fi
+#           
+#           echo "If repos"
+#           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
+#           if [ -n "$(grep -i biglinux <<< $URL)" ];then
+#             if [ -n "$(grep stable <<< $BRANCH)" -o -n "$(grep xanmod <<< $URL)" ];then
+#               echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
+#               repo=$(sed 's|https://github.com/||' <<< $URL)
+#             fi
+#           else
+#             echo ${{ github.token }} | gh auth login --with-token
+#             repo=${{ github.repository }}
+#           fi
+#           
+#           echo "gh release create"
+#           gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $URL" || echo "release already exists"
+#           GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
+#           echo "gh release upload"
+#           for i in .zst .sig .tar .md5; do
+#             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
+#           done
+#       
+#       - name: Push to Repo
+#         shell: bash
+#         env:
+#           URL: ${{ github.event.client_payload.url }}
+#           BRANCH: ${{ github.event.client_payload.branch }}
+#           MANJARO_BRANCH: ${{ github.event.client_payload.manjaro_branch }}
+#         run: |
+#           echo "## ssh setup"
+#           mkdir -p /home/runner/.ssh
+#           > /home/runner/.ssh/github_actions
+#           chmod 600 /home/runner/.ssh/github_actions
+#           #ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+#           echo "${{ secrets.PKGBUILD_KEY }}" >> /home/runner/.ssh/github_actions
+#           eval `ssh-agent -s`
+#           ssh-add /home/runner/.ssh/github_actions
+#           ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /home/runner/.ssh/known_hosts
+#           ip=${{ secrets.PKGBUILD_HOST }}
+#           # ip=$(ssh ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }} -p ${{ secrets.PKGBUILD_PORT }} 'echo $(curl -s ident.me) | tail -n1')
+#           # ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} $ip >> /home/runner/.ssh/known_hosts
+#           
+#           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
+#           cd $gitfolder
+#           ls -lh
+#           if [ -n "$(grep testing <<< $MANJARO_BRANCH)" -o -n "$(grep manjaro-testing <<< $BRANCH)" ]; then
+#             branch=manjaro-testing
+#             echo "1"
+#           elif [ -n "$MANJARO_BRANCH" ]; then
+#             echo "2"
+#             #cancel push to repo
+#             curl -s -H "Authorization: token ${{ github.token }}" \
+#             -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
+#             sleep infinity
+#           elif [ -n "$(grep xanmod <<< $URL)" ]; then
+#             branch=testing
+#             echo "3"
+#           elif [ -n "$(grep update-stable <<< $BRANCH)" ]; then
+#             branch=update-stable
+#             echo "4"
+#           elif [ -n "$(grep update-testing <<< $BRANCH)" ]; then
+#             branch=update-testing
+#             echo "5"
+#           elif [ -n "$(grep unstable <<< $BRANCH)" -o -n "$(grep development <<< $BRANCH)" ];then
+#             branch=${{ secrets.REPO_UNSTABLE }}
+#             echo "6"
+#           elif [ -n "$(grep testing <<< $BRANCH)" ];then
+#             branch=testing
+#             echo "7"
+#           elif [ -n "$(grep stable <<< $BRANCH)" ];then
+#             branch=stable
+#             echo "8"
+#           # elif [ -n "$(grep https://github.com/xivastudio/ <<< $URL)" ]; then
+#           #   #cancel push to repo
+#           #   curl -s -H "Authorization: token ${{ github.token }}" \
+#           #   -X POST "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel"
+#           #   sleep infinity
+#           else
+#             branch=${{ secrets.REPO_UNSTABLE }}
+#             echo "9"
+#           fi
+#           for i in *.zst *.sig *.md5; do
+#           test -e $i && rsync -vapz -e "ssh -p ${{ secrets.PKGBUILD_PORT }}" $i ${{ secrets.PKGBUILD_USER }}@$ip:${{ secrets.PKGBUILD_DIR }}/$branch/x86_64
+#           sleep 10
+#           done
+#           exit 0
+#       
+#       # # Tmate ##
+#       # - name: Setup tmate session
+#       #   uses: mxschmitt/action-tmate@v3
+#           
+#       - name: Telegram Alert Fail
+#         # if: ${{ failure() || cancelled() }}
+#         if: ${{ failure() }}
+#         run: |
+#           curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "🚨 FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} 🖥", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
+#           
+#         ## Tmate ##
+#       #- name: Setup tmate session
+#       #  uses: mxschmitt/action-tmate@v3 
+#           
+#         
+# #      - name: upload-cdn77
+# #        shell: bash -O extglob {0}
+# #        run: |
+# #          # if is not yet supported in composite https://github.com/actions/runner/blob/main/docs/adrs/0549-composite-run-steps.md#if-condition
+# #          if [ -z "${{ inputs.cdn77-host }}" ] || [ -z "${{ inputs.cdn77-user }}" ] || [ -z "${{ inputs.cdn77-pwd }}" ]; then 
+# #            echo "## not (all) credentials given for cdn77 upload"
+# #            exit 0
+# #          fi
+# #          
+# #          echo "## cdn77 upload"
+# #          
+# #          ssh-keyscan -t rsa ${{ inputs.cdn77-host }} >> /home/runner/.ssh/known_hosts
+# #          ## create target dir
+# #          sshpass -p "${{ inputs.cdn77-pwd }}" rsync -vaP --stats -e ssh ${{ inputs.edition }} \
+# #            ${{ inputs.cdn77-user }}@${{ inputs.cdn77-host }}:/www/
+# #          # upload
+# #          sshpass -p "${{ inputs.cdn77-pwd }}" rsync -vaP \
+# #            --stats -e ssh ${{ steps.upload-prepare.outputs.upload-files }} \
+# #            ${{ inputs.cdn77-user }}@${{ inputs.cdn77-host }}:/www/${{ inputs.edition }}/${{ inputs.version }}/
