@@ -254,6 +254,8 @@ jobs:
           
           echo "If repos"
           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
+          echo url=$url
+          echo git_branch=$git_branch
           if [ -n "$(grep -i biglinux <<< $url)" ];then
             if [ -n "$(grep stable <<< $git_branch)" -o -n "$(grep xanmod <<< $url)" ];then
               echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
