@@ -4,7 +4,7 @@ name: Build Package
 on:
   repository_dispatch:
     types:
-      - biglinux/*
+      # - biglinux/*
       - AUR/*
       # - xivastudio/*
       - URL/*
