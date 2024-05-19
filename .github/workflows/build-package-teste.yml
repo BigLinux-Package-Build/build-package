@@ -199,9 +199,10 @@ jobs:
           cd $gitfolder
           
           # CheckOut
-          if [ -n "$(echo $url | grep https://github.com/biglinux/)" ]; then
+          if [ -n "$(grep https://github.com/biglinux/ <<< $url)" ]; then
             git checkout $git_branch
             sed -i '/source=/s/\.git"/\.git#branch=$git_branch"/' PKGBUILD
+            cat PKGBUILD
           fi
           
           # Build
