@@ -287,17 +287,17 @@ jobs:
         #   MANJARO_BRANCH: ${{ github.event.client_payload.manjaro_branch }}
         run: |
           echo "## ssh setup"
-          mkdir -p $HOME/.ssh
-          > $HOME/.ssh/github_actions
-          chmod 600 $HOME/.ssh/github_actions
+          mkdir -p /root/.ssh
+          > /root/.ssh/github_actions
+          chmod 600 /root/.ssh/github_actions
           #ssh-agent -a /tmp/ssh_agent.sock > /dev/null
-          echo "${{ secrets.PKGBUILD_KEY }}" >> $HOME/.ssh/github_actions
+          echo "${{ secrets.PKGBUILD_KEY }}" >> /root/.ssh/github_actions
           eval `ssh-agent -s`
-          ssh-add $HOME/.ssh/github_actions
-          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> $HOME/.ssh/known_hosts
+          ssh-add /root/.ssh/github_actions
+          ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} ${{ secrets.PKGBUILD_HOST }} >> /root/.ssh/known_hosts
           ip=${{ secrets.PKGBUILD_HOST }}
           # ip=$(ssh ${{ secrets.PKGBUILD_USER }}@${{ secrets.PKGBUILD_HOST }} -p ${{ secrets.PKGBUILD_PORT }} 'echo $(curl -s ident.me) | tail -n1')
-          # ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} $ip >> $HOME/.ssh/known_hosts
+          # ssh-keyscan -t rsa -p ${{ secrets.PKGBUILD_PORT }} $ip >> /root/.ssh/known_hosts
           
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
