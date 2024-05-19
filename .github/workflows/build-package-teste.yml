@@ -22,7 +22,7 @@ env:
   gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
   gpg-passphrase: ${{ secrets.PASSPHRASE }}
   repo-mirror: ${{ secrets.REPO_MIRROR }}
-  repo_Dev: ${{ secrets.REPO_DEV }}
+  repo_dev: ${{ secrets.REPO_DEV }}
 
 jobs:
   build:
