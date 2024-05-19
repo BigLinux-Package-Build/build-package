@@ -33,7 +33,7 @@ jobs:
       - name: Set ENVs
         shell: bash
         run: |
-          echo "xpto=casa" $GITHUB_ENV
+          echo "xpto=casa" >> $GITHUB_ENV
 
       - name: echo PayLoads
         shell: bash
