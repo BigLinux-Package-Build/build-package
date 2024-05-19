@@ -201,7 +201,7 @@ jobs:
           # CheckOut
           if [ -n "$(grep https://github.com/biglinux/ <<< $url)" ]; then
             git checkout $git_branch
-            sed -i '/source=/s/\.git"/\.git#branch=$git_branch"/' PKGBUILD
+            sed -i '/source=/s/\.git"/\.git#branch='$git_branch'"/' PKGBUILD
             cat PKGBUILD
           fi
           
