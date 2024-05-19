@@ -284,9 +284,9 @@ jobs:
 
       - name: Push to Repo
         shell: bash
-        # env:
-        #   BRANCH: ${{ github.event.client_payload.branch }}
-        #   MANJARO_BRANCH: ${{ github.event.client_payload.manjaro_branch }}
+        env:
+          LANG: en_US.UTF-8
+          LC_ALL: en_US.UTF-8
         run: |
           echo "## ssh setup"
           mkdir -p /root/.ssh
