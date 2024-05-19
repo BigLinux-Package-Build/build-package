@@ -19,9 +19,9 @@ on:
         default: true
 
 env:
-  gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
-  gpg-passphrase: ${{ secrets.PASSPHRASE }}
-  repo-mirror: ${{ secrets.REPO_MIRROR }}
+  gpg_key: ${{ secrets.GPG_PRIVATE_KEY }}
+  gpg_passphrase: ${{ secrets.PASSPHRASE }}
+  repo_mirror: ${{ secrets.REPO_MIRROR }}
   repo_dev: ${{ secrets.REPO_DEV }}
 
 jobs:
@@ -45,17 +45,17 @@ jobs:
           if [ -n "${{ github.event.client_payload.branch }}" ];then
             echo "git_branch=${{ github.event.client_payload.branch }}" >> $GITHUB_ENV
           fi
-          # if [ -n "${{ github.event.client_payload.extrarepo }}" ];then
-          #   echo "extrarepo=${{ github.event.client_payload.extrarepo }}" >> $GITHUB_ENV
-          # fi
-          # if [ -n "${{ github.event.client_payload.extrapackage }}" ];then
-          #   echo "extrapackage=${{ github.event.client_payload.extrapackage }}" >> $GITHUB_ENV
-          # fi
-          # if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
-          #   echo "manjaro_branch=stable" >> $GITHUB_ENV
-          # else
-          #   echo "manjaro_branch=${{ github.event.client_payload.manjaro_branch }}" >> $GITHUB_ENV
-          # fi
+          if [ -n "${{ github.event.client_payload.extrarepo }}" ];then
+            echo "extrarepo=${{ github.event.client_payload.extrarepo }}" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ github.event.client_payload.extrapackage }}" ];then
+            echo "extrapackage=${{ github.event.client_payload.extrapackage }}" >> $GITHUB_ENV
+          fi
+          if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
+            echo "manjaro_branch=stable" >> $GITHUB_ENV
+          else
+            echo "manjaro_branch=${{ github.event.client_payload.manjaro_branch }}" >> $GITHUB_ENV
+          fi
 
       - name: echo PayLoads
         shell: bash
@@ -138,15 +138,15 @@ jobs:
           echo '
           [biglinux-'"${repo_dev}"']
           SigLevel = PackageRequired
-          Server = https://'"$repo-mirror"'.biglinux.com.br/'"${repo_dev}"'/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo_mirror"'.biglinux.com.br/'"${repo_dev}"'/$arch' | tee -a /etc/pacman.conf
           echo '
           [biglinux-testing]
           SigLevel = PackageRequired
-          Server = https://'"$repo-mirror"'.biglinux.com.br/testing/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo_mirror"'.biglinux.com.br/testing/$arch' | tee -a /etc/pacman.conf
           echo '
           [biglinux-stable]
           SigLevel = PackageRequired
-          Server = https://'"$repo-mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo_mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf
           
           sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf
           
@@ -203,11 +203,11 @@ jobs:
       - name: sign package
         shell: bash -O extglob {0}
         run: |
-          cat <(echo -e "${{ inputs.gpg-key }}") | gpg --batch --import &>/dev/null
+          cat <(echo -e "${{ inputs.gpg_key }}") | gpg --batch --import &>/dev/null
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           for p in $(find $PWD -maxdepth 1 -regex '.*\.pkg\.tar\.\(xz\|zst\)'); do
-            gpg --pinentry-mode loopback --passphrase "$gpg-passphrase" --detach-sign ${p}
+            gpg --pinentry-mode loopback --passphrase "$gpg_passphrase" --detach-sign ${p}
           done
 
       - name: CheckSum
