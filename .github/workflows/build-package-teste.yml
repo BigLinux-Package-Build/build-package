@@ -19,13 +19,11 @@ on:
         default: true
 
 env:
-  manjaro_branch: ${{ env.manjaro_branch }}
   git_branch: ${{ github.event.client_payload.branch }}
   gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
   gpg-passphrase: ${{ secrets.PASSPHRASE }}
   extrarepo: ${{ github.event.client_payload.extrarepo }}
   extrapackage: ${{ github.event.client_payload.extrapackage }}
-  tmate: ${{ inputs.debug_enabled }}
   repo-mirror: ${{ secrets.REPO_MIRROR }}
   repo-dev: ${{ secrets.REPO_DEV }}
   url: ${{ github.event.client_payload.url }}
@@ -42,6 +40,18 @@ jobs:
         - /var:/lixo/var
     steps:
       - uses: actions/checkout@v4
+      - name: echo PayLoads
+        run: |
+          echo PayLoads
+          if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
+            echo "manjaro_branch=stable" >> $GITHUB_ENV
+          else
+            echo "manjaro_branch=${{ github.event.client_payload.manjaro_branch }}" >> $GITHUB_ENV
+          fi
+          echo "url: $url"
+          echo "git_branch: $git_branch"
+          echo "manjaro_branch: $manjaro_branch"
+
       - name: Dependencies
         shell: bash #-O extglob {0}
         run: |
