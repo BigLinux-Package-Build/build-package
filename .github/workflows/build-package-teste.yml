@@ -39,10 +39,23 @@ jobs:
       - name: Set ENVs
         shell: bash
         run: |
-          echo "xpto=casa" >> $GITHUB_ENV
           if [ -n "${{ github.event.client_payload.url }}" ];then
             echo "url=${{ github.event.client_payload.url }}" >> $GITHUB_ENV
           fi
+          if [ -n "${{ github.event.client_payload.branch }}" ];then
+            echo "git_branch=${{ github.event.client_payload.branch }}" >> $GITHUB_ENV
+          fi
+          # if [ -n "${{ github.event.client_payload.extrarepo }}" ];then
+          #   echo "extrarepo=${{ github.event.client_payload.extrarepo }}" >> $GITHUB_ENV
+          # fi
+          # if [ -n "${{ github.event.client_payload.extrapackage }}" ];then
+          #   echo "extrapackage=${{ github.event.client_payload.extrapackage }}" >> $GITHUB_ENV
+          # fi
+          # if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
+          #   echo "manjaro_branch=stable" >> $GITHUB_ENV
+          # else
+          #   echo "manjaro_branch=${{ github.event.client_payload.manjaro_branch }}" >> $GITHUB_ENV
+          # fi
 
       - name: echo PayLoads
         shell: bash
