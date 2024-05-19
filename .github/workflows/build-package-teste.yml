@@ -92,47 +92,48 @@ jobs:
           passwd -d builduser
           printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers
 
-      # - name: Clean System
-      #   shell: bash -O extglob {0}
-      #   run: |
-      #     # Clean System
-      #     df -h
-      #     docker image prune --all --force
-      #     rm -rf \
-      #     /lixo/opt/google \
-      #     /lixo/opt/pipx \
-      #     /lixo/opt/microsoft \
-      #     /lixo/opt/az \
-      #     /lixo/opt/hostedtoolcache \
-      #     /lixo/usr/local/.ghcup \
-      #     /lixo/usr/share/dotnet \
-      #     /lixo/usr/share/swift \
-      #     /lixo/usr/share/dotnet \
-      #     /lixo/usr/share/miniconda \
-      #     /lixo/usr/local/lib/android \
-      #     /lixo/usr/local/lib/node_modules \
-      #     /lixo/usr/lib/snapd \
-      #     /lixo/usr/lib/modules \
-      #     /lixo/usr/lib/python3 \
-      #     /lixo/usr/lib/firefox \
-      #     /lixo/usr/lib/heroku \
-      #     /lixo/usr/lib/mono \
-      #     /lixo/usr/lib/llvm-13 \
-      #     /lixo/usr/lib/llvm-14 \
-      #     /lixo/usr/lib/llvm-15 \
-      #     /lixo/usr/lib/gcc \
-      #     /lixo/usr/lib/google-cloud-sdk \
-      #     /lixo/usr/lib/jvm \
-      #     /lixo/usr/local/doc \
-      #     /lixo/usr/local/sqlpackage \
-      #     /lixo/usr/local/n \
-      #     /lixo/usr/local/aws-sam-cli \
-      #     /lixo/usr/local/aws-cli \
-      #     /lixo/usr/local/julia1.10.3 \
-      #     /lixo/usr/local/share/vcpkg \
-      #     /lixo/usr/local/share/chromium \
-      #     /lixo/usr/local/share/powershell
-      #     df -h
+      - name: Clean System
+        shell: bash -O extglob {0}
+        if: "!contains(github.event.client_payload.url, 'biglinux')"
+        run: |
+          # Clean System
+          df -h
+          docker image prune --all --force
+          rm -rf \
+          /lixo/opt/google \
+          /lixo/opt/pipx \
+          /lixo/opt/microsoft \
+          /lixo/opt/az \
+          /lixo/opt/hostedtoolcache \
+          /lixo/usr/local/.ghcup \
+          /lixo/usr/share/dotnet \
+          /lixo/usr/share/swift \
+          /lixo/usr/share/dotnet \
+          /lixo/usr/share/miniconda \
+          /lixo/usr/local/lib/android \
+          /lixo/usr/local/lib/node_modules \
+          /lixo/usr/lib/snapd \
+          /lixo/usr/lib/modules \
+          /lixo/usr/lib/python3 \
+          /lixo/usr/lib/firefox \
+          /lixo/usr/lib/heroku \
+          /lixo/usr/lib/mono \
+          /lixo/usr/lib/llvm-13 \
+          /lixo/usr/lib/llvm-14 \
+          /lixo/usr/lib/llvm-15 \
+          /lixo/usr/lib/gcc \
+          /lixo/usr/lib/google-cloud-sdk \
+          /lixo/usr/lib/jvm \
+          /lixo/usr/local/doc \
+          /lixo/usr/local/sqlpackage \
+          /lixo/usr/local/n \
+          /lixo/usr/local/aws-sam-cli \
+          /lixo/usr/local/aws-cli \
+          /lixo/usr/local/julia1.10.3 \
+          /lixo/usr/local/share/vcpkg \
+          /lixo/usr/local/share/chromium \
+          /lixo/usr/local/share/powershell
+          df -h
 
       - name: Changes in System
         shell: bash #-O extglob {0}
@@ -334,12 +335,12 @@ jobs:
             sleep 10
           done
 
-      # Tmate ##
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        # if: ${{ failure() }}
-        with:
-          install-dependencies: false
+#       # Tmate ##
+#       - name: Setup tmate session
+#         uses: mxschmitt/action-tmate@v3
+#         if: ${{ failure() }}
+#         with:
+#           install-dependencies: false
 #           
 #       - name: Telegram Alert Fail
 #         # if: ${{ failure() || cancelled() }}
