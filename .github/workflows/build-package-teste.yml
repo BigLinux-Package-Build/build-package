@@ -269,6 +269,9 @@ jobs:
             if [ -n "$(grep stable <<< $git_branch)" -o -n "$(grep xanmod <<< $url)" ];then
               echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
               repo=$(sed 's|https://github.com/||' <<< $url)
+            else
+              echo ${{ github.token }} | gh auth login --with-token
+              repo=${{ github.repository }}
             fi
           else
             echo ${{ github.token }} | gh auth login --with-token
