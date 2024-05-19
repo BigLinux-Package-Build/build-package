@@ -17,12 +17,12 @@ on:
         description: 'With TMATE'
         required: false
         default: true
-        
+
 env:
   gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
   gpg-passphrase: ${{ secrets.PASSPHRASE }}
   repo-mirror: ${{ secrets.REPO_MIRROR }}
-  repo-dev: ${{ secrets.REPO_DEV }}
+  repo_Dev: ${{ secrets.REPO_DEV }}
 
 jobs:
   build:
@@ -63,6 +63,7 @@ jobs:
           echo "url: $url"
           echo "git_branch: $git_branch"
           echo "manjaro_branch: $manjaro_branch"
+          echo "$repo_dev"
 
       - name: Dependencies
         shell: bash #-O extglob {0}
@@ -135,9 +136,9 @@ jobs:
           sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf
           sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf
           echo '
-          [biglinux-'"$repo-dev"']
+          [biglinux-'"${repo_dev}"']
           SigLevel = PackageRequired
-          Server = https://'"$repo-mirror"'.biglinux.com.br/'"$repo-dev"'/$arch' | tee -a /etc/pacman.conf
+          Server = https://'"$repo-mirror"'.biglinux.com.br/'"${repo_dev}"'/$arch' | tee -a /etc/pacman.conf
           echo '
           [biglinux-testing]
           SigLevel = PackageRequired
