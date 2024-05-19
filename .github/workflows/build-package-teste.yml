@@ -32,14 +32,30 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set ENVs
         run: |
-          echo "git_branch=${{ github.event.client_payload.branch }}" >> $GITHUB_ENV
-          echo "gpg-key=${{ secrets.GPG_PRIVATE_KEY }}" >> $GITHUB_ENV
-          echo "gpg-passphrase=${{ secrets.PASSPHRASE }}" >> $GITHUB_ENV
-          echo "extrarepo=${{ github.event.client_payload.extrarepo }}" >> $GITHUB_ENV
-          echo "extrapackage=${{ github.event.client_payload.extrapackage }}" >> $GITHUB_ENV
-          echo "repo-mirror=${{ secrets.REPO_MIRROR }}" >> $GITHUB_ENV
-          echo "repo-dev=${{ secrets.REPO_DEV }}" >> $GITHUB_ENV
-          echo "url=${{ github.event.client_payload.url }}" >> $GITHUB_ENV
+          if [ -n "${{ github.event.client_payload.branch }}" ];then
+            echo "git_branch=${{ github.event.client_payload.branch }}" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ secrets.GPG_PRIVATE_KEY }}" ];then
+            echo "gpg-key=${{ secrets.GPG_PRIVATE_KEY }}" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ secrets.PASSPHRASE }}" ];then
+            echo "gpg-passphrase=${{ secrets.PASSPHRASE }}" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ github.event.client_payload.extrarepo }}" ];then
+            echo "extrarepo=${{ github.event.client_payload.extrarepo }}" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ github.event.client_payload.extrapackage }}" ];then
+            echo "extrapackage=${{ github.event.client_payload.extrapackage }}" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ secrets.REPO_MIRROR }}" ];then
+            echo "repo-mirror=${{ secrets.REPO_MIRROR }}" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ secrets.REPO_DEV }}" ];then
+            echo "repo-dev=${{ secrets.REPO_DEV }}" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ github.event.client_payload.url }}" ];then
+            echo "url=${{ github.event.client_payload.url }}" >> $GITHUB_ENV
+          fi
           if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
             echo "manjaro_branch=stable" >> $GITHUB_ENV
           else
