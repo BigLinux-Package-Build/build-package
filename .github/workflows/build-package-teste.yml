@@ -28,7 +28,7 @@ env:
   tmate: ${{ inputs.debug_enabled }}
   repo-mirror: ${{ secrets.REPO_MIRROR }}
   repo-dev: ${{ secrets.REPO_DEV }}
-  url: $url
+  url: ${{ github.event.client_payload.url }}
 
 jobs:
   build:
