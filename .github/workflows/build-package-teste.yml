@@ -84,6 +84,7 @@ jobs:
             docker \
             openssh \
             github-cli \
+            glibc-locales \
             manjaro-chrootbuild
           
           # Create User
@@ -157,6 +158,7 @@ jobs:
           Server = https://'"$repo_mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
           
           sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          sed -i '/multilib/{s/#//;n;s/#//;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
           
           # makepkg
           sed -i '/PACKAGER=/s/.*/\PACKAGER="BigLinux Package Build <bigbruno@gmail.com>\"/' /etc/makepkg.conf
