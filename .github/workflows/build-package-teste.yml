@@ -31,6 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set ENVs
+        shell: bash
         run: |
           # if [ -n "${{ github.event.client_payload.branch }}" ];then
           #   echo "git_branch=${{ github.event.client_payload.branch }}" >> $GITHUB_ENV
@@ -38,9 +39,9 @@ jobs:
           # if [ -n "${{ secrets.GPG_PRIVATE_KEY }}" ];then
           #   echo "gpg-key=${{ secrets.GPG_PRIVATE_KEY }}" >> $GITHUB_ENV
           # fi
-          if [ -n "${{ secrets.PASSPHRASE }}" ];then
-            echo "gpg-passphrase=${{ secrets.PASSPHRASE }}" >> $GITHUB_ENV
-          fi
+          # if [ -n "${{ secrets.PASSPHRASE }}" ];then
+          #   echo "gpg-passphrase=${{ secrets.PASSPHRASE }}" >> $GITHUB_ENV
+          # fi
           # if [ -n "${{ github.event.client_payload.extrarepo }}" ];then
           #   echo "extrarepo=${{ github.event.client_payload.extrarepo }}" >> $GITHUB_ENV
           # fi
@@ -61,6 +62,7 @@ jobs:
           # else
           #   echo "manjaro_branch=${{ github.event.client_payload.manjaro_branch }}" >> $GITHUB_ENV
           # fi
+          echo "xpto=casa" $GITHUB_ENV
 
       - name: echo PayLoads
         shell: bash
