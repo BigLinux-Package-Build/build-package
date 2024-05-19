@@ -94,7 +94,7 @@ jobs:
 
       - name: Clean System
         shell: bash -O extglob {0}
-        if: "!contains(github.event.client_payload.url, 'biglinuxx')"
+        if: "!contains(github.event.client_payload.url, 'biglinux/')"
         run: |
           # Clean System
           df -h
