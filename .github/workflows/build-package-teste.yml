@@ -52,11 +52,15 @@ jobs:
           if [ -n "${{ github.event.client_payload.extrapackage }}" ];then
             echo "extrapackage=${{ github.event.client_payload.extrapackage }}" >> $GITHUB_ENV
           fi
+          if [ -n "${{ github.event.client_payload.pkgver }}" ];then
+            echo "pkgver=${{ github.event.client_payload.pkgver }}" >> $GITHUB_ENV
+          fi
           if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
             echo "manjaro_branch=stable" >> $GITHUB_ENV
           else
             echo "manjaro_branch=${{ github.event.client_payload.manjaro_branch }}" >> $GITHUB_ENV
           fi
+          
 
       - name: echo PayLoads
         shell: bash
@@ -65,6 +69,7 @@ jobs:
           echo "url: $url"
           echo "git_branch: $git_branch"
           echo "manjaro_branch: $manjaro_branch"
+          echo "pkgver: $pkgver"
 
       - name: Dependencies
         shell: bash #-O extglob {0}
@@ -151,6 +156,9 @@ jobs:
           Server = https://'"$repo_mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
           
           sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          
+          # makepkg
+          echo 'PACKAGER="BigLinux Package Build <bigbruno@gmail.com>"' | sudo tee -a /etc/makepkg.conf > /dev/null
           
           # KeyRing
           pacman-key -r 45EC44879815E2A6
@@ -247,16 +255,11 @@ jobs:
             exit 0
           fi
           
-          #Release#
-          echo "Release"
-          source PKGBUILD
-          release=${pkgname}-${pkgver}-${pkgrel}
-          
           echo "If repos"
           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
           echo url=$url
           echo git_branch=$git_branch
-          if [ -n "$(grep -i biglinux <<< $url)" ];then
+          if [ -n "$(grep -i biglinux <<< $url)" -o -n "$(grep -i xivastudio <<< $url)" ];then
             if [ -n "$(grep stable <<< $git_branch)" -o -n "$(grep xanmod <<< $url)" ];then
               echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
               repo=$(sed 's|https://github.com/||' <<< $url)
@@ -265,6 +268,10 @@ jobs:
             echo ${{ github.token }} | gh auth login --with-token
             repo=${{ github.repository }}
           fi
+          
+          # Release
+          release=$(basename "$url")-$pkgver
+          echo release=$release
           
           echo "gh release create"
           gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $url" || echo "release already exists"
