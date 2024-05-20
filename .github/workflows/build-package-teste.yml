@@ -279,6 +279,11 @@ jobs:
           fi
           
           # Release
+          if [ -z "$pkgver" ];then
+            pkgVer=$(grep -E "\bpkgver=" PKGBUILD | cut -d "=" -f2)
+            pkgRel=$(grep -E "\bpkgrel=" PKGBUILD | cut -d "=" -f2)
+            pkgver=$pkgVer-$pkgRel
+          fi
           release=$(basename "$url")-$pkgver
           
           echo "gh release create"
