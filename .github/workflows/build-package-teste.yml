@@ -291,9 +291,14 @@ jobs:
           fi
           release=$(basename "$url")-$pkgver
           
+          echo "ECHOs"
+          echo "release=$release"
+          echo "repo=$repo"
+          echo "url=$url"
+          
           echo "gh release create"
           gh release create ${release} --title ${release} --repo ${repo} --notes "automated release from $url" || echo "release already exists"
-          GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
+          # GITHUB_LINK=https://github.com/${repo}/releases/download/${release}
           echo "gh release upload"
           for i in .zst .sig .tar .md5; do
             find -iname "*$i" -exec gh release upload ${release} --repo ${repo} --clobber {} \;
