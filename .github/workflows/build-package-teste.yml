@@ -280,9 +280,14 @@ jobs:
           
           # Release
           if [ -z "$pkgver" ];then
-            pkgVer=$(grep -E "\bpkgver=" PKGBUILD | cut -d "=" -f2)
-            pkgRel=$(grep -E "\bpkgrel=" PKGBUILD | cut -d "=" -f2)
-            pkgver=$pkgVer-$pkgRel
+            pkgName=$(basename "$url" | head -n1)
+            pkgArch=$(grep -E "\barch=" PKGBUILD | cut -d "=" -f2 | tr -cd '[:alnum:]' | head -n1)
+            pkgFile=$(ls *.pkg.tar.zst | head -n1 | sed 's/.pkg.tar.zst//')
+            release=${pkgFile//$pkgName/}
+            release=${release//$pkgArch/}
+            release=${release//--/-}
+            release=${release#-}
+            release=${release%-}
           fi
           release=$(basename "$url")-$pkgver
           
