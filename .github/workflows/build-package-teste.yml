@@ -211,6 +211,8 @@ jobs:
             sed -i "/\barch=/s/'any'/'x86_64' 'aarch64'/" PKGBUILD
           fi
           
+          cat PKGBUILD
+          
           # Build
           sudo -u builduser bash -c "sudo chrootbuild -H -p . -b $manjaro_branch"
 
@@ -290,7 +292,7 @@ jobs:
             pkgArch=$(grep -E "\barch=" PKGBUILD | cut -d "=" -f2 | tr -cd '[:alnum:]_' | head -n1)
             pkgFile=$(ls *.pkg.tar.zst | head -n1 | sed 's/.pkg.tar.zst//')
             pkgver=${pkgFile//$pkgName/}
-            pkgver=${pkgver//$pkgArch/}
+            # pkgver=${pkgver//$pkgArch/}
             pkgver=${pkgver//--/-}
             pkgver=${pkgver#-}
             pkgver=${pkgver%-}
