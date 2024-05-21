@@ -207,7 +207,7 @@ jobs:
           
           # Set Arch
           pkgArch=$(grep -E "\barch=" PKGBUILD | cut -d "=" -f2 | tr -cd '[:alnum:]_' | head -n1)
-          if [ "$(pkgArch)" = "any" ];then
+          if [ "$pkgArch" = "any" ];then
             sed -i "/\barch=/s/'any'/'x86_64' 'aarch64'/" PKGBUILD
           fi
           
