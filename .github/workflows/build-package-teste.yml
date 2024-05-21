@@ -8,7 +8,7 @@ on:
   #     - AUR/*
       - xivastudio/*
   #     - URL/*
-      - BigLinuxAur/*
+  #     - BigLinuxAur/*
 
   workflow_dispatch:
     inputs:
@@ -52,9 +52,6 @@ jobs:
           if [ -n "${{ github.event.client_payload.extrapackage }}" ];then
             echo "extrapackage=${{ github.event.client_payload.extrapackage }}" >> $GITHUB_ENV
           fi
-          # if [ -n "${{ github.event.client_payload.pkgver }}" ];then
-          #   echo "pkgver=${{ github.event.client_payload.pkgver }}" >> $GITHUB_ENV
-          # fi
           if [ -z "${{ github.event.client_payload.manjaro_branch }}" ];then
             echo "manjaro_branch=stable" >> $GITHUB_ENV
           else
@@ -69,7 +66,6 @@ jobs:
           echo "url: $url"
           echo "git_branch: $git_branch"
           echo "manjaro_branch: $manjaro_branch"
-          echo "pkgver: $pkgver"
 
       - name: Dependencies
         shell: bash #-O extglob {0}
@@ -321,7 +317,6 @@ jobs:
           mkdir -p /root/.ssh
           > /root/.ssh/github_actions
           chmod 600 /root/.ssh/github_actions
-          #ssh-agent -a /tmp/ssh_agent.sock > /dev/null
           echo "${{ secrets.PKGBUILD_KEY }}" >> /root/.ssh/github_actions
           eval `ssh-agent -s`
           ssh-add /root/.ssh/github_actions
@@ -369,9 +364,9 @@ jobs:
 #         if: ${{ failure() }}
 #         with:
 #           install-dependencies: false
-#           
-#       - name: Telegram Alert Fail
-#         # if: ${{ failure() || cancelled() }}
-#         if: ${{ failure() }}
-#         run: |
-#           curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "🚨 FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} 🖥", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
+
+      - name: Telegram Alert Fail
+        # if: ${{ failure() || cancelled() }}
+        if: ${{ failure() }}
+        run: |
+          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "🚨 FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} 🖥", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
