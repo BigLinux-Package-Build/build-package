@@ -243,6 +243,7 @@ jobs:
           for i in $(ls *.sig | sed 's/.sig//'); do md5sum $i.sig >> $i.md5; done
           exit 0' > md5.sh
           bash md5.sh
+          rm md5.sh
 
       # ## Tmate ##
       # - name: Setup tmate session
