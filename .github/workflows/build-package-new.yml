@@ -1,13 +1,13 @@
-name: Build Package New
+name: Build Package
 
 # Controls when the workflow will run
 on:
   repository_dispatch:
     types:
       - biglinux/*
-  #     - AUR/*
+      - AUR/*
       - xivastudio/*
-  #     - URL/*
+      - URL/*
       - BigLinuxAur/*
 
   workflow_dispatch:
