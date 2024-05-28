@@ -169,9 +169,6 @@ jobs:
           #add git to ARM
           sed -i 's/base-devel/base-devel git/' /usr/share/manjaro-arm-tools/lib/functions.sh
           
-          #add repo to rootfs ARM
-          sed -i '/mv -f $LIBDIR\/pacman.conf.$ARCH.backup $LIBDIR\/pacman.conf.$ARCH/{p;s/.*/sudo cp -a $LIBDIR\/pacman.conf.$ARCH $CHROOTDIR\/etc\/pacman.conf/;}' /usr/share/manjaro-arm-tools/lib/functions.sh
-          
           # Fix SyncFirst
           sed -i '/SyncFirst/d' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           
@@ -222,10 +219,10 @@ jobs:
             sed -i "/\barch=/s/arch=.*/arch=('x86_64' 'aarch64')/" PKGBUILD
           fi
           
-          if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep x86_64)" ];then
-            echo -e "\033[01;31mBuild x86_64\033[0m"
-            sudo -u builduser bash -c "sudo chrootbuild -H -p . -b $manjaro_branch"
-          fi
+          # if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep x86_64)" ];then
+          #   echo -e "\033[01;31mBuild x86_64\033[0m"
+          #   sudo -u builduser bash -c "sudo chrootbuild -H -p . -b $manjaro_branch"
+          # fi
           
           if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep aarch64)" ];then
             echo -e "\033[01;31mBuild aarch64\033[0m"
