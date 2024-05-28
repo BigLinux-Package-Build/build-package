@@ -85,6 +85,7 @@ jobs:
             fakeroot \
             qemu-full \
             qemu-base \
+            systemd-nspawn \
             qemu-system-arm \
             qemu-user-static \
             manjaro-arm-tools \
