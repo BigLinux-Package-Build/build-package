@@ -220,12 +220,12 @@ jobs:
           fi
           
           if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep x86_64)" ];then
-            # Build x86_64
+            echo "Build x86_64"
             sudo -u builduser bash -c "sudo chrootbuild -H -p . -b $manjaro_branch"
           fi
           
           if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep aarch64)" ];then
-            # Build aarch64
+            echo "Build aarch64"
             sudo -u builduser bash -c "sudo buildarmpkg -H -p . -b $manjaro_branch"
           fi
 
