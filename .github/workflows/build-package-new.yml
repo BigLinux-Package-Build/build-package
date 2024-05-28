@@ -226,7 +226,7 @@ jobs:
           
           if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep aarch64)" ];then
             echo "Build aarch64"
-            sudo -u builduser bash -c "sudo buildarmpkg -H -p . -b $manjaro_branch"
+            sudo -u builduser bash -c "sudo buildarmpkg -p . -b $manjaro_branch"
           fi
 
       - name: Rename Package
