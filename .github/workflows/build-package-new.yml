@@ -83,7 +83,6 @@ jobs:
             glibc-locales \
             manjaro-chrootbuild \
             cmake \
-            nspawn \
             systemd \
             fakeroot \
             qemu-full \
@@ -189,6 +188,11 @@ jobs:
           # Changes in manjaro-chrootbuild
           sed -i 's|https://repo.manjaro.org/repo|https://mirrors2.manjaro.org|' /usr/lib/manjaro-chrootbuild/util.sh
           sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
+          
+          # # Install dependencies from BigLinux Repository
+          # pacman -Sy --noconfirm \
+          #   nspawn \
+          #   nspawn-tools 
 
         ## Tmate ##
       - name: Setup tmate session
