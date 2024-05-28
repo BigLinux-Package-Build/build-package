@@ -83,13 +83,11 @@ jobs:
             glibc-locales \
             manjaro-chrootbuild \
             cmake \
-            nspawn \
             systemd \
             fakeroot \
             qemu-full \
             qemu-base \
             base-devel \
-            nspawn-tools \
             qemu-system-arm \
             qemu-user-static \
             manjaro-arm-tools \
