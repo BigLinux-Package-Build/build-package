@@ -228,7 +228,7 @@ jobs:
           #   sudo -u builduser bash -c "sudo chrootbuild -H -p . -b $manjaro_branch"
           # fi
           
-          Build aarch64
+          # Build aarch64
           if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep aarch64)" ];then
             echo -e "\033[01;31mBuild aarch64\033[0m"
             sudo -u builduser bash -c "sudo buildarmpkg -p . -b $manjaro_branch"
