@@ -81,8 +81,15 @@ jobs:
             openssh \
             github-cli \
             glibc-locales \
-            manjaro-chrootbuild
-          
+            manjaro-chrootbuild \
+            fakeroot \
+            qemu-full \
+            qemu-base \
+            qemu-system-arm \
+            qemu-user-static \
+            manjaro-arm-tools \
+            qemu-system-aarch64 \
+            arch-install-scripts 
           # Create User
           useradd builduser -m
           passwd -d builduser
@@ -139,25 +146,31 @@ jobs:
           # Changes in System
           # pacman.conf
           echo 'Server = https://mirrors2.manjaro.org/stable/$repo/$arch' | tee /etc/pacman.d/mirrorlist
-          sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
-          sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
-          sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
-          sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
+          sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
+          sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
+          sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           echo '
           [biglinux-'"${repo_dev}"']
           SigLevel = PackageRequired
-          Server = https://'"$repo_mirror"'.biglinux.com.br/'"${repo_dev}"'/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          Server = https://'"$repo_mirror"'.biglinux.com.br/'"${repo_dev}"'/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           echo '
           [biglinux-testing]
           SigLevel = PackageRequired
-          Server = https://'"$repo_mirror"'.biglinux.com.br/testing/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          Server = https://'"$repo_mirror"'.biglinux.com.br/testing/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           echo '
           [biglinux-stable]
           SigLevel = PackageRequired
-          Server = https://'"$repo_mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          Server = https://'"$repo_mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           
-          sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
-          sed -i '/multilib/{s/#//;n;s/#//;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64
+          sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
+          sed -i '/multilib/{s/#//;n;s/#//;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
+          
+          #add git to ARM
+          sed -i 's/base-devel/base-devel git/' /usr/share/manjaro-arm-tools/lib/functions.sh
+          
+          #add repo to rootfs ARM
+          sed -i '/mv -f $LIBDIR\/pacman.conf.$ARCH.backup $LIBDIR\/pacman.conf.$ARCH/{p;s/.*/sudo cp -a $LIBDIR\/pacman.conf.$ARCH $CHROOTDIR\/etc\/pacman.conf/;}' /usr/share/manjaro-arm-tools/lib/functions.sh
           
           # makepkg
           sed -i '/PACKAGER=/s/.*/\PACKAGER="BigLinux Package Build <bigbruno@gmail.com>\"/' /etc/makepkg.conf
@@ -206,8 +219,15 @@ jobs:
             sed -i "/\barch=/s/arch=.*/arch=('x86_64' 'aarch64')/" PKGBUILD
           fi
           
-          # Build
-          sudo -u builduser bash -c "sudo chrootbuild -H -p . -b $manjaro_branch"
+          if [ "$(grep -E "\barch=" PKGBUILD | cut -d "=" -f2 | tr -cd '[:alnum:]_' | head -n1)" = "x86_64" ];then
+            # Build x86_64
+            sudo -u builduser bash -c "sudo chrootbuild -H -p . -b $manjaro_branch"
+          fi
+          
+          if [ "$(grep -E "\barch=" PKGBUILD | cut -d "=" -f2 | tr -cd '[:alnum:]_' | head -n1)" = "aarch64" ];then
+            # Build aarch64
+            sudo -u builduser bash -c "sudo buildarmpkg -H -p . -b $manjaro_branch"
+          fi
 
       - name: Rename Package
         shell: bash -O extglob {0}
