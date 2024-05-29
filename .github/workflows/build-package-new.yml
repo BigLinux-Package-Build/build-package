@@ -81,6 +81,7 @@ jobs:
             openssh \
             github-cli \
             glibc-locales \
+            manjaro-arm-tools \
             manjaro-chrootbuild 
 
           # Create User
@@ -191,7 +192,6 @@ jobs:
           #   base-devel \
           #   qemu-system-arm \
           #   qemu-user-static \
-          #   manjaro-arm-tools \
           #   qemu-system-aarch64 \
           #   arch-install-scripts 
 
