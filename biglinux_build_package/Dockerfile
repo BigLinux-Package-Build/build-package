@@ -1,5 +1,5 @@
 FROM manjarolinux/build:latest
-RUN sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;};/SyncFirst/d;/multilib/{s/#//;n;s/#//;}' /etc/pacman.conf
+RUN sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;};/SyncFirst/d;/multilib/{s/#//;n;s/#//;}' /etc/pacman.conf \
     && pacman -Syu --noconfirm --needed \
       git \
       wget \
