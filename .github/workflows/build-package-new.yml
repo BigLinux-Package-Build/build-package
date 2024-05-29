@@ -189,10 +189,10 @@ jobs:
           sed -i 's|https://repo.manjaro.org/repo|https://mirrors2.manjaro.org|' /usr/lib/manjaro-chrootbuild/util.sh
           sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
           
-          # # Install dependencies from BigLinux Repository
-          # pacman -Sy --noconfirm \
-          #   nspawn \
-          #   nspawn-tools 
+          # Install dependencies from BigLinux Repository
+          pacman -Sy --noconfirm \
+            nspawn \
+            nspawn-tools 
 
         ## Tmate ##
       - name: Setup tmate session
@@ -227,17 +227,17 @@ jobs:
             sed -i "/\barch=/s/arch=.*/arch=('x86_64' 'aarch64')/" PKGBUILD
           fi
           
-          # Build x86_64
-          if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep x86_64)" ];then
-            echo -e "\033[01;31mBuild x86_64\033[0m"
-            sudo -u builduser bash -c "sudo chrootbuild -H -p . -b $manjaro_branch"
-          fi
-          
-          # # Build aarch64
-          # if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep aarch64)" ];then
-          #   echo -e "\033[01;31mBuild aarch64\033[0m"
-          #   sudo -u builduser bash -c "sudo buildarmpkg -p . -b $manjaro_branch"
+          # # Build x86_64
+          # if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep x86_64)" ];then
+          #   echo -e "\033[01;31mBuild x86_64\033[0m"
+          #   sudo -u builduser bash -c "sudo chrootbuild -H -p . -b $manjaro_branch"
           # fi
+          
+          # Build aarch64
+          if [ -n "$(sed -n '/\barch=/p' PKGBUILD | grep aarch64)" ];then
+            echo -e "\033[01;31mBuild aarch64\033[0m"
+            sudo -u builduser bash -c "sudo buildarmpkg -p . -b $manjaro_branch"
+          fi
 
       - name: Rename Package
         shell: bash -O extglob {0}
