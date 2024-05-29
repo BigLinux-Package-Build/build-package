@@ -210,7 +210,7 @@ jobs:
           install-dependencies: false
 
       - name: Download Source
-        if: "${{ inputs.tmate == '' }}"
+        # if: ${{ !inputs.debug_enabled }}
         shell: bash
         run: |
           git clone $url.git
