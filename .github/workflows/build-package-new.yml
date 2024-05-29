@@ -107,6 +107,7 @@ jobs:
         if: |
           !contains(github.event.client_payload.url, 'biglinux/') &&
           !contains(github.event.client_payload.url, 'xivastudio/') &&
+          ${{ !inputs.debug_enabled }}
         run: |
           # Clean System
           df -h
