@@ -19,7 +19,10 @@ RUN sed -i '/LocalFileSigLevel/{s/.*/ParallelDownloads = 8/;}; /SyncFirst/d; /#\
     && sed -i '/SyncFirst/d' /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64 \
     && pacman-key -r 45EC44879815E2A6 \
     && pacman-key --lsign-key 45EC44879815E2A6 \
+    && cp /etc/pacman.conf /etc/pacman.conf-bkp \
+    && echo -e '\n[biglinux-stable]\nSigLevel = PackageRequired\nServer = https://repo.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf \
     && pacman -Sy biglinux-keyring --noconfirm \
+    && mv /etc/pacman.conf-bkp /etc/pacman.conf \
     && pacman-key --populate biglinux 
     
 COPY docker-entrypoint.sh /
