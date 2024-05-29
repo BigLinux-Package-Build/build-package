@@ -70,8 +70,7 @@ jobs:
         shell: bash -O extglob {0}
         if: |
           !contains(github.event.client_payload.url, 'biglinux/') &&
-          !contains(github.event.client_payload.url, 'xivastudio/') &&
-          ${{ !inputs.debug_enabled }}
+          !contains(github.event.client_payload.url, 'xivastudio/')
         run: |
           # Clean System
           df -h
