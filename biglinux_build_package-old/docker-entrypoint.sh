@@ -3,29 +3,26 @@ set -e
 container=docker
 export container
 
-# if [ $# -eq 0 ]; then
-# 	echo >&2 'ERROR: No command specified. You probably want to run `journalctl -f`, or maybe `bash`?'
-# 	exit 1
-# fi
+if [ $# -eq 0 ]; then
+	echo >&2 'ERROR: No command specified. You probably want to run `journalctl -f`, or maybe `bash`?'
+	exit 1
+fi
 
-# if [ ! -t 0 ]; then
-# 	echo >&2 'ERROR: TTY needs to be enabled (`docker run -t ...`).'
-# 	exit 1
-# fi
+if [ ! -t 0 ]; then
+	echo >&2 'ERROR: TTY needs to be enabled (`docker run -t ...`).'
+	exit 1
+fi
 
 env >/etc/docker-entrypoint-env
 
 cat >/etc/systemd/system/docker-entrypoint.target <<EOF
 [Unit]
 Description=the target for docker-entrypoint.service
-Requires=systemd-logind.service systemd-user-sessions.service
+Requires=docker-entrypoint.service systemd-logind.service systemd-user-sessions.service
 EOF
-# Requires=docker-entrypoint.service systemd-logind.service systemd-user-sessions.service
 
-# quoted_args="$(printf " %q" "${@}")"
-# echo "${quoted_args}" >/etc/docker-entrypoint-cmd
-# echo /usr/bin/tail -f /dev/null > /etc/docker-entrypoint-cmd
-echo /bin/bash -f /dev/null > /etc/docker-entrypoint-cmd
+quoted_args="$(printf " %q" "${@}")"
+echo "${quoted_args}" >/etc/docker-entrypoint-cmd
 
 cat >/etc/systemd/system/docker-entrypoint.service <<EOF
 [Unit]
@@ -47,7 +44,7 @@ EOF
 
 systemctl mask systemd-firstboot.service systemd-udevd.service systemd-modules-load.service
 systemctl unmask systemd-logind
-# systemctl enable docker-entrypoint.service
+systemctl enable docker-entrypoint.service
 
 systemd=
 if [ -x /lib/systemd/systemd ]; then
