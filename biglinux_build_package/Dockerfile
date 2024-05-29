@@ -1,5 +1,6 @@
 FROM manjarolinux/build:latest
-RUN sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;};/SyncFirst/d;/multilib/{s/#//;n;s/#//;}' /etc/pacman.conf \
+RUN sed -i '/LocalFileSigLevel/{s/.*/ParallelDownloads = 8/;}; /SyncFirst/d; /#\[multilib\]/{s/#//;n;s/#//;}; /multilib repositories/d' /etc/pacman.conf
+ \
     && echo 'Server = https://mirrors2.manjaro.org/stable/$repo/$arch' > /etc/pacman.d/mirrorlist \
     && pacman -Syu --noconfirm --needed \
       git \
