@@ -28,7 +28,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: manjarolinux/build:latest
+      image: xivastudio/biglinux_build_package:latest
       options: --privileged
       volumes:
         - /opt:/lixo/opt
@@ -402,8 +402,8 @@ jobs:
 #         with:
 #           install-dependencies: false
 
-      - name: Telegram Alert Fail
-        # if: ${{ failure() || cancelled() }}
-        if: ${{ failure() }}
-        run: |
-          curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "🚨 FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} 🖥", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
+      # - name: Telegram Alert Fail
+      #   # if: ${{ failure() || cancelled() }}
+      #   if: ${{ failure() }}
+      #   run: |
+      #     curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.CHAT_ID }}", "text": "🚨 FALHA ao criar Pacote: ${{ github.event.action }} a partir do branch ${{ github.ref_name }}, link do erro: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} 🖥", "disable_notification": false}' ${{ secrets.MESSAGE_BOT_KEY }}
