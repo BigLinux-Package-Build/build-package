@@ -21,8 +21,9 @@ Description=the target for docker-entrypoint.service
 Requires=docker-entrypoint.service systemd-logind.service systemd-user-sessions.service
 EOF
 
-quoted_args="$(printf " %q" "${@}")"
-echo "${quoted_args}" >/etc/docker-entrypoint-cmd
+# quoted_args="$(printf " %q" "${@}")"
+# echo "${quoted_args}" >/etc/docker-entrypoint-cmd
+echo /usr/bin/tail -f /dev/null > /etc/docker-entrypoint-cmd
 
 cat >/etc/systemd/system/docker-entrypoint.service <<EOF
 [Unit]
@@ -60,5 +61,3 @@ fi
 systemd_args="--show-status=false --unit=docker-entrypoint.target"
 echo "$0: starting $systemd $systemd_args"
 exec $systemd $systemd_args
-
-/usr/bin/tail -f
