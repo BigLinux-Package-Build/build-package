@@ -26,5 +26,6 @@ RUN sed -i '/LocalFileSigLevel/{s/.*/ParallelDownloads = 8/;}; /SyncFirst/d; /#\
     && pacman-key --populate biglinux 
     
 COPY docker-entrypoint.sh /
+COPY docker-entrypoint.sh /usr/local/bin/tail
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
