@@ -70,19 +70,32 @@ jobs:
       - name: Dependencies
         shell: bash #-O extglob {0}
         run: |
-          # Install Packages
-          pacman -Sy --noconfirm \
-            git \
-            wget \
-            nano \
-            tmate \
-            rsync \
-            docker \
-            openssh \
-            github-cli \
-            glibc-locales \
-            manjaro-arm-tools \
-            manjaro-chrootbuild 
+          # Install Packages | ported to docker image
+          # pacman -Sy --noconfirm --needed \
+          #   git \
+          #   wget \
+          #   nano \
+          #   tmate \
+          #   rsync \
+          #   docker \
+          #   openssh \
+          #   github-cli \
+          #   glibc-locales \
+          #   manjaro-arm-tools \
+          #   manjaro-chrootbuild \
+          #   arch-install-scripts 
+            
+            # nspawn \
+            # nspawn-tools \
+            # cmake \
+            # systemd \
+            # fakeroot \
+            # qemu-full \
+            # qemu-base \
+            # base-devel \
+            # qemu-system-arm \
+            # qemu-user-static \
+            # qemu-system-aarch64 \
 
           # Create User
           useradd builduser -m
@@ -157,44 +170,36 @@ jobs:
           SigLevel = PackageRequired
           Server = https://'"$repo_mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           
-          sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
-          sed -i '/multilib/{s/#//;n;s/#//;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
+          #  | ported to docker image
+          # sed -i '/LocalFileSigLevel/{p;s/.*/ParallelDownloads = 8/;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
+          # sed -i '/multilib/{s/#//;n;s/#//;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           
-          #add git to ARM
-          sed -i 's/base-devel/base-devel git/' /usr/share/manjaro-arm-tools/lib/functions.sh
+          # # Fix SyncFirst | ported to docker image
+          # sed -i '/SyncFirst/d' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           
-          # Fix SyncFirst
-          sed -i '/SyncFirst/d' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 /usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
-          
-          # makepkg
+          # # makepkg
           sed -i '/PACKAGER=/s/.*/\PACKAGER="BigLinux Package Build <bigbruno@gmail.com>\"/' /etc/makepkg.conf
           sed -i '/MAKEFLAGS=/s/.*/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
           
-          # KeyRing
-          pacman-key -r 45EC44879815E2A6
-          pacman-key --lsign-key 45EC44879815E2A6
-          pacman -Sy biglinux-keyring --noconfirm
-          pacman-key --populate biglinux
+          # # KeyRing | ported to docker image
+          # pacman-key -r 45EC44879815E2A6
+          # pacman-key --lsign-key 45EC44879815E2A6
+          # pacman -Sy biglinux-keyring --noconfirm
+          # pacman-key --populate biglinux
           
           # Changes in manjaro-chrootbuild
           sed -i 's|https://repo.manjaro.org/repo|https://mirrors2.manjaro.org|' /usr/lib/manjaro-chrootbuild/util.sh
           sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
-          
-          # # Install dependencies from BigLinux Repository
-          # pacman -Sy --noconfirm \
-          #   nspawn \
-          #   nspawn-tools \
-          #   cmake \
-          #   systemd \
-          #   fakeroot \
-          #   qemu-full \
-          #   qemu-base \
-          #   base-devel \
-          #   qemu-system-arm \
-          #   qemu-user-static \
-          #   qemu-system-aarch64 \
-          #   arch-install-scripts 
 
+          # to ARM
+          sed -i 's/base-devel/base-devel git/' /usr/share/manjaro-arm-tools/lib/functions.sh
+          sudo sed -i -e 's|1>/dev/null||g' /usr/share/manjaro-arm-tools/lib/functions.sh
+          sudo sed -i -e 's|1> /dev/null 2>&1||g' /usr/share/manjaro-arm-tools/lib/functions.sh
+          sudo sed -i -e 's|2>/dev/null||g' /usr/share/manjaro-arm-tools/lib/functions.sh
+          
+          # #add repo to rootfs
+          sed -i '/mv -f $LIBDIR\/pacman.conf.$ARCH.backup $LIBDIR\/pacman.conf.$ARCH/{p;s/.*/sudo cp -a $LIBDIR\/pacman.conf.$ARCH $CHROOTDIR\/etc\/pacman.conf/;}' /usr/share/manjaro-arm-tools/lib/functions.sh
+          
         ## Tmate ##
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
