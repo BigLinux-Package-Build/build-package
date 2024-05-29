@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: xivastudio/biglinux_build_package:latest
-      options: --privileged
+      options: --privileged --entrypoint "/docker-entrypoint.sh"
       volumes:
         - /opt:/lixo/opt
         - /usr:/lixo/usr
@@ -106,7 +106,8 @@ jobs:
         shell: bash -O extglob {0}
         if: |
           !contains(github.event.client_payload.url, 'biglinux/') &&
-          !contains(github.event.client_payload.url, 'xivastudio/')
+          !contains(github.event.client_payload.url, 'xivastudio/') &&
+          ${{ inputs.tmate == '' }}
         run: |
           # Clean System
           df -h
