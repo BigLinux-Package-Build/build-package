@@ -93,7 +93,7 @@ runs:
         sudo tar -xvzf pacman-v${PACMAN_VERSION}.tar.gz
         # pushd pacman-${PACMAN_VERSION}
         pushd pacman-v${PACMAN_VERSION}
-        sudo patch -p1 -i ../pacman-sync-first-option.patch
+        # sudo patch -p1 -i ../pacman-sync-first-option.patch
         sudo meson --prefix=/usr \
                     --buildtype=plain \
                     -Ddoc=disabled \
