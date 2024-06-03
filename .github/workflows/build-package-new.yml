@@ -116,7 +116,7 @@ jobs:
         run: |
           # Changes in System
           # pacman.conf
-          # echo 'Server = https://mirrors2.manjaro.org/stable/$repo/$arch' | tee /etc/pacman.d/mirrorlist
+          echo 'Server = https://nnenix.mm.fcix.net/manjaro/stable/$repo/$arch' | tee /etc/pacman.d/mirrorlist
           sed -i '/biglinux/,$d' /etc/pacman.conf
           sed -i '/\[core\]/{h;s/.*/\[biglinux-update-stable\]/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 #/usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           sed -i '/\[core\]/{h;s/.*/SigLevel = PackageRequired/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 #/usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
@@ -140,7 +140,7 @@ jobs:
           sed -i '/MAKEFLAGS=/s/.*/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
           
           # Changes in manjaro-chrootbuild
-          sed -i 's|https://repo.manjaro.org/repo|https://mirrors2.manjaro.org|' /usr/lib/manjaro-chrootbuild/util.sh
+          sed -i 's|https://repo.manjaro.org/repo|https://nnenix.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
           sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
 
           # to ARM
