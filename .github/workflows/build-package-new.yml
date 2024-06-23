@@ -126,7 +126,7 @@ jobs:
           echo '
           [bigiborg-'"${repo_dev}"']
           SigLevel = PackageRequired
-          Server = https://'"${{$mirror_unstable}}"'/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 #/usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
+          Server = https://'"$mirror_unstable"'/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 #/usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           echo '
           [biglinux-testing]
           SigLevel = PackageRequired
