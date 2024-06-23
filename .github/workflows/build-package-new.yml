@@ -22,7 +22,8 @@ env:
   gpg_key: ${{ secrets.GPG_PRIVATE_KEY }}
   gpg_passphrase: ${{ secrets.PASSPHRASE }}
   repo_mirror: ${{ secrets.REPO_MIRROR }}
-  repo_dev: ${{ secrets.REPO_DEV }}
+  repo_dev: ${{ secrets.REPO_UNSTABLE }}
+  mirror_unstable: ${{ secrets.MIRROR_UNSTABLE }}
 
 jobs:
   build:
@@ -123,9 +124,9 @@ jobs:
           sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 #/usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 #/usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           echo '
-          [biglinux-'"${repo_dev}"']
+          [bigiborg-'"${repo_dev}"']
           SigLevel = PackageRequired
-          Server = https://'"$repo_mirror"'.biglinux.com.br/'"${repo_dev}"'/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 #/usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
+          Server = https://'"{{$mirror_unstable}}"'/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 #/usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
           echo '
           [biglinux-testing]
           SigLevel = PackageRequired
