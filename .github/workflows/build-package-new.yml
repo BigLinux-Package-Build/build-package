@@ -262,14 +262,18 @@ jobs:
           echo "If repos"
           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
           if [ -n "$(grep -i biglinux <<< $url)" -o -n "$(grep -i xivastudio <<< $url)" ];then
+            echo "1"
             if [ -n "$(grep stable <<< $git_branch)" -o -n "$(grep xanmod <<< $url)" ];then
+              echo "2"
               echo ${{ secrets.TOKEN_RELEASE }} | gh auth login --with-token
               repo=$(sed 's|https://github.com/||' <<< $url)
             else
+              echo "3"
               echo ${{ github.token }} | gh auth login --with-token
               repo=${{ github.repository }}
             fi
           else
+            echo "4"
             echo ${{ github.token }} | gh auth login --with-token
             repo=${{ github.repository }}
           fi
