@@ -277,6 +277,7 @@ jobs:
             echo ${{ github.token }} | gh auth login --with-token
             repo=${{ github.repository }}
           fi
+          echo "5"
           
           # Release
           # if [ -z "$pkgver" ];then
@@ -290,7 +291,7 @@ jobs:
           #   pkgver=${pkgver%-}
           # fi
           # release=$(basename "$url")-$pkgver
-          
+          echo "6"
           # Release
           release=$(ls *.pkg* | head -n1 | sed 's/.pkg.*//')
           
