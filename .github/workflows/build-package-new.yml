@@ -293,8 +293,9 @@ jobs:
           # release=$(basename "$url")-$pkgver
           echo "6"
           # Release
-          release=$(ls *.pkg* | head -n1 | sed 's/.pkg.*//')
-          ls *.pkg* | head -n1 | sed 's/.pkg.*//'
+          # release=$(ls *.pkg* | head -n1 | sed 's/.pkg.*//')
+          ls *.pkg* | head -n1 | sed 's/.pkg.*//' > release
+          release=$(cat release)
           
           echo "ECHOs"
           echo "release=$release"
