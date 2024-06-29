@@ -294,6 +294,7 @@ jobs:
           echo "6"
           # Release
           release=$(ls *.pkg* | head -n1 | sed 's/.pkg.*//')
+          ls *.pkg* | head -n1 | sed 's/.pkg.*//'
           
           echo "ECHOs"
           echo "release=$release"
