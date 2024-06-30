@@ -295,6 +295,8 @@ jobs:
           # Release
           # release=$(ls *.pkg* | head -n1 | sed 's/.pkg.*//')
           ls *.pkg* | head -n1 | sed 's/.pkg.*//' > release
+          echo "cat release"
+          cat release
           release=$(cat release)
           
           echo "ECHOs"
