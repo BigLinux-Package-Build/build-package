@@ -112,6 +112,14 @@ jobs:
           /lixo/usr/local/share/powershell
           df -h
 
+        ## Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        # timeout-minutes: 60
+        with:
+          install-dependencies: false
+
       - name: Changes in System
         shell: bash #-O extglob {0}
         run: |
@@ -135,11 +143,11 @@ jobs:
           [biglinux-stable]
           SigLevel = PackageRequired
           Server = https://'"$repo_mirror"'.biglinux.com.br/stable/$arch' | tee -a /etc/pacman.conf /etc/chrootbuild/pacman.conf.x86_64 #/usr/share/manjaro-arm-tools/lib/pacman.conf.aarch64
-          
+
           # # makepkg
           sed -i '/PACKAGER=/s/.*/\PACKAGER="BigLinux Package Build <bigbruno@gmail.com>\"/' /etc/makepkg.conf
           sed -i '/MAKEFLAGS=/s/.*/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
-          
+
           # Changes in manjaro-chrootbuild
           sed -i 's|https://repo.manjaro.org/repo|https://nnenix.mm.fcix.net/manjaro|' /usr/lib/manjaro-chrootbuild/util.sh
           sed -i '/-Syy/s/-Syy/-Syy git /' /usr/lib/manjaro-chrootbuild/util-chroot.sh
@@ -149,17 +157,10 @@ jobs:
           # sudo sed -i -e 's|1>/dev/null||g' /usr/share/manjaro-arm-tools/lib/functions.sh
           # sudo sed -i -e 's|1> /dev/null 2>&1||g' /usr/share/manjaro-arm-tools/lib/functions.sh
           # sudo sed -i -e 's|2>/dev/null||g' /usr/share/manjaro-arm-tools/lib/functions.sh
-          
+
           # #add repo to rootfs
           # sed -i '/mv -f $LIBDIR\/pacman.conf.$ARCH.backup $LIBDIR\/pacman.conf.$ARCH/{p;s/.*/sudo cp -a $LIBDIR\/pacman.conf.$ARCH $CHROOTDIR\/etc\/pacman.conf/;}' /usr/share/manjaro-arm-tools/lib/functions.sh
-          
-        ## Tmate ##
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-        # timeout-minutes: 60
-        with:
-          install-dependencies: false
+
 
       - name: Download Source
         # if: ${{ !inputs.debug_enabled }}
