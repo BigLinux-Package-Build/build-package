@@ -200,9 +200,9 @@ runs:
         sudo sed -i '/\[core\]/{h;s/.*/Server = https:\/\/repo.biglinux.com.br\/update-stable\/$arch/;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
         sudo sed -i '/\[core\]/{h;s/.*//;p;x;}' /etc/chrootbuild/pacman.conf.x86_64
         echo '
-        [biglinux-'"${{ inputs.repo-dev }}"']
-        SigLevel = PackageRequired
-        Server = https://'"${{ inputs.repo-mirror }}"'.biglinux.com.br/'"${{ inputs.repo-dev }}"'/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
+          [bigiborg-'"${repo_dev}"']
+          SigLevel = PackageRequired
+          Server = https://'"$mirror_unstable"'/$arch' | sudo tee -a /etc/chrootbuild/pacman.conf.x86_64
         echo '
         [biglinux-testing]
         SigLevel = PackageRequired
