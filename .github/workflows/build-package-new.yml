@@ -260,6 +260,15 @@ jobs:
             exit 0
           fi
           
+          # who last commit
+          lastCommit=$(git log -1 --format="%an <%ae>")
+          if [ "$(grep github-actions <<< $lastCommit)" ];then
+            lastCommit=$(git log -2 --format="%an <%ae>")
+          fi
+          if [ -n "$(grep -Ei "catafesta|tales" <<< $lastCommit)" ];then
+            exit 0
+          fi
+
           echo "If repos"
           # Se for repo stable mandar release para o github do biglinux, se for testing ou development mandar para o release do package-build
           if [ -n "$(grep -i biglinux <<< $url)" -o -n "$(grep -i xivastudio <<< $url)" ];then
@@ -333,7 +342,16 @@ jobs:
           gitfolder=$(find -type f -name PKGBUILD | sed 's/PKGBUILD//')
           cd $gitfolder
           ls -lh
-          if [ -n "$(grep testing <<< $manjaro_branch)" -o -n "$(grep manjaro-testing <<< $git_branch)" ]; then
+
+          # who last commit
+          lastCommit=$(git log -1 --format="%an <%ae>")
+          if [ "$(grep github-actions <<< $lastCommit)" ];then
+            lastCommit=$(git log -2 --format="%an <%ae>")
+          fi
+          # set branch to send package
+          if [ -n "$(grep -Ei "catafesta|talesam" <<< $lastCommit)" ];then
+            branch=cypher
+          elif [ -n "$(grep testing <<< $manjaro_branch)" -o -n "$(grep manjaro-testing <<< $git_branch)" ]; then
             branch=manjaro-testing
             echo "1"
           elif [ -n "$(grep xanmod <<< $url)" ]; then
