@@ -112,14 +112,6 @@ jobs:
           /lixo/usr/local/share/powershell
           df -h
 
-        ## Tmate ##
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-        # timeout-minutes: 60
-        with:
-          install-dependencies: false
-
       - name: Changes in System
         shell: bash #-O extglob {0}
         run: |
@@ -161,6 +153,13 @@ jobs:
           # #add repo to rootfs
           # sed -i '/mv -f $LIBDIR\/pacman.conf.$ARCH.backup $LIBDIR\/pacman.conf.$ARCH/{p;s/.*/sudo cp -a $LIBDIR\/pacman.conf.$ARCH $CHROOTDIR\/etc\/pacman.conf/;}' /usr/share/manjaro-arm-tools/lib/functions.sh
 
+        ## Tmate ##
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        # timeout-minutes: 60
+        with:
+          install-dependencies: false
 
       - name: Download Source
         # if: ${{ !inputs.debug_enabled }}
