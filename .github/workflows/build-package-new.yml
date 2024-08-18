@@ -347,8 +347,9 @@ jobs:
           if [ "$(grep github-actions <<< $lastCommit)" ];then
             lastCommit=$(git log -2 --format="%an <%ae>")
           fi
+          echo "lastCommit=$lastCommit"
           # set branch to send package
-          if [ -n "$(grep -Ei "catafesta" <<< $lastCommit)" ];then
+          if [ -n "$(grep -i "catafesta" <<< $lastCommit)" ];then
             branch=cypher
           elif [ -n "$(grep testing <<< $manjaro_branch)" -o -n "$(grep manjaro-testing <<< $git_branch)" ]; then
             branch=manjaro-testing
