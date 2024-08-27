@@ -1,0 +1,21 @@
+name: 'teste'
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches: [ "*" ]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: teste
+        shell: bash
+        run: |
+          echo ${{ secrets.DOCKERHUN_PASSWORD }} > texte.txt
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
