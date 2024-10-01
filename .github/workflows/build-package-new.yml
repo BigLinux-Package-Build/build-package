@@ -69,10 +69,9 @@ jobs:
           
       - name: Clean System
         shell: bash -O extglob {0}
-        if: |
-          contains(github.event.client_payload.url, '/piper-voices') &&
-          !contains(github.event.client_payload.url, 'biglinux/') &&
-          !contains(github.event.client_payload.url, 'xivastudio/')
+        # if: |
+        #   !contains(github.event.client_payload.url, 'biglinux/') &&
+        #   !contains(github.event.client_payload.url, 'xivastudio/')
         run: |
           # Clean System
           df -h
