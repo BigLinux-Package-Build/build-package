@@ -356,7 +356,7 @@ jobs:
             branch=manjaro-testing
             echo "1"
           elif [ -n "$(grep xanmod <<< $url)" ]; then
-            branch=testing
+            branch=${{ secrets.REPO_UNSTABLE }}
             echo "3"
           elif [ -n "$(grep update-stable <<< $git_branch)" ]; then
             branch=update-stable
