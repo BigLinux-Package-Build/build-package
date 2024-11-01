@@ -355,7 +355,7 @@ jobs:
           elif [ -n "$(grep testing <<< $manjaro_branch)" -o -n "$(grep manjaro-testing <<< $git_branch)" ]; then
             branch=manjaro-testing
             echo "1"
-          elif [ -n "$(grep xanmod <<< $url)" ]; then
+          elif [ -n "$(grep xanmod | grep -v x64v <<< $url)" ]; then
             branch=${{ secrets.REPO_UNSTABLE }}
             echo "3"
           elif [ -n "$(grep update-stable <<< $git_branch)" ]; then
