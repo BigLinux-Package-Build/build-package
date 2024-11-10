@@ -154,6 +154,10 @@ jobs:
           # #add repo to rootfs
           # sed -i '/mv -f $LIBDIR\/pacman.conf.$ARCH.backup $LIBDIR\/pacman.conf.$ARCH/{p;s/.*/sudo cp -a $LIBDIR\/pacman.conf.$ARCH $CHROOTDIR\/etc\/pacman.conf/;}' /usr/share/manjaro-arm-tools/lib/functions.sh
 
+          # Add "Daniel M. Capella" KEY
+          sudo pacman-key --recv-keys EA4F7B321A906AD9
+          # sudo pacman-key --recv-keys 29C71CE912B57264
+
         ## Tmate ##
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
